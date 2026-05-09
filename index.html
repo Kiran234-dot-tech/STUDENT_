@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f111a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="DocVault">
+  <title>DocVault Student Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3248;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #8892a4;
+      --blue: #3b82f6;
+      --pink: #ec4899;
+      --teal: #14b8a6;
+      --orange: #f97316;
+      --radius: 8px;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(135deg, rgba(108, 99, 255, 0.12), transparent 26%),
+        linear-gradient(225deg, rgba(20, 184, 166, 0.08), transparent 28%),
+        linear-gradient(180deg, #10131d 0%, var(--bg) 48%, #0b0d13 100%);
+      color: var(--text);
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 72%);
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    * {
+      scrollbar-color: rgba(136, 146, 164, 0.55) rgba(15, 17, 23, 0.35);
+      scrollbar-width: thin;
+    }
+
+    *::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: rgba(15, 17, 23, 0.35);
+      border-radius: 999px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background: rgba(136, 146, 164, 0.48);
+      border: 2px solid rgba(15, 17, 23, 0.35);
+      border-radius: 999px;
+    }
+
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(167, 139, 250, 0.68);
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-rows: 68px calc(100vh - 68px);
+      min-height: 100vh;
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      padding: 0 24px;
+      background: rgba(15, 17, 23, 0.76);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(22px) saturate(1.35);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: 0;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.28), rgba(20, 184, 166, 0.16));
+      border: 1px solid rgba(226, 232, 240, 0.12);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.12), 0 12px 30px rgba(0, 0, 0, 0.22);
+    }
+
+    .brand-text {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .clock {
+      min-width: 58px;
+      color: var(--muted);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: rgba(34, 38, 58, 0.78);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(167, 139, 250, 0.65);
+      background: #292e44;
+    }
+
+    .btn.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), #8b5cf6 48%, var(--accent2));
+      color: #fff;
+      font-weight: 800;
+      box-shadow: 0 14px 36px rgba(108, 99, 255, 0.32);
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 16px 38px rgba(108, 99, 255, 0.38);
+    }
+
+    .btn.ghost {
+      background: rgba(34, 38, 58, 0.62);
+    }
+
+    .btn.danger {
+      border-color: rgba(239, 68, 68, 0.34);
+      background: rgba(239, 68, 68, 0.12);
+      color: #fecaca;
+    }
+
+    .btn.icon-only {
+      width: 34px;
+      min-height: 34px;
+      padding: 0;
+    }
+
+    .modal-header .btn.icon-only {
+      width: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      font-size: 16px;
+    }
+
+    #installBtn {
+      display: none;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      min-height: 0;
+      gap: 0;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 18px 14px;
+      background: rgba(18, 21, 31, 0.72);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(18px);
+      overflow-y: auto;
+    }
+
+    .side-section {
+      margin-bottom: 22px;
+    }
+
+    .side-title {
+      margin: 0 10px 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .nav-item,
+    .subject-item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: 42px;
+      gap: 10px;
+      padding: 0 10px;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      transition: color 180ms ease, background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+      text-align: left;
+    }
+
+    .nav-item:hover,
+    .subject-item:hover,
+    .nav-item.active,
+    .subject-item.active {
+      color: var(--text);
+      background: linear-gradient(90deg, rgba(108, 99, 255, 0.2), rgba(20, 184, 166, 0.08));
+      box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.13);
+      transform: translateX(2px);
+    }
+
+    .nav-icon {
+      width: 24px;
+      flex: 0 0 24px;
+      text-align: center;
+    }
+
+    .nav-label,
+    .subject-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      font-weight: 650;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: rgba(136, 146, 164, 0.16);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      flex: 0 0 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+    }
+
+    .new-subject {
+      width: 100%;
+      min-height: 42px;
+      margin-top: auto;
+      border: 1px dashed rgba(167, 139, 250, 0.48);
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.11), rgba(20, 184, 166, 0.07));
+      color: var(--accent2);
+      font-weight: 800;
+    }
+
+    .main {
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+      min-width: 0;
+      min-height: 0;
+      padding: 18px 20px 20px;
+      gap: 14px;
+    }
+
+    .workspace-panel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 104px;
+      padding: 18px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(34, 38, 58, 0.92), rgba(26, 29, 39, 0.8)),
+        linear-gradient(90deg, rgba(108, 99, 255, 0.18), rgba(20, 184, 166, 0.08));
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24), inset 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--accent2);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .workspace-title {
+      margin: 0;
+      color: #f8fafc;
+      font-size: clamp(26px, 4vw, 38px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .view-summary {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .workspace-pills {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-width: 420px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 0 11px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      color: #dbeafe;
+      background: rgba(15, 17, 23, 0.38);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .tabbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      overflow-x: auto;
+      padding: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(18, 21, 31, 0.66);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .tab {
+      min-height: 38px;
+      padding: 0 13px;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid transparent;
+      font-weight: 800;
+      transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
+      white-space: nowrap;
+    }
+
+    .tab:hover,
+    .tab.active {
+      color: var(--text);
+      background: rgba(34, 38, 58, 0.9);
+      border-color: rgba(167, 139, 250, 0.28);
+      transform: translateY(-1px);
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.42), rgba(20, 184, 166, 0.14));
+      color: #fff;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) 220px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap::before {
+      content: "⌕";
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      color: var(--text);
+      background: rgba(17, 20, 31, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    input,
+    select {
+      min-height: 42px;
+      padding: 0 12px;
+    }
+
+    textarea {
+      min-height: 104px;
+      resize: vertical;
+      padding: 12px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(167, 139, 250, 0.74);
+      box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.16);
+    }
+
+    .search-wrap input {
+      padding-left: 42px;
+      padding-right: 82px;
+    }
+
+    .shortcut {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      background: rgba(34, 38, 58, 0.86);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .table-wrap {
+      min-height: 0;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 8px;
+      background: rgba(17, 20, 31, 0.72);
+      overflow: auto;
+      box-shadow: 0 18px 52px rgba(0, 0, 0, 0.18), inset 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    table {
+      width: 100%;
+      min-width: 1120px;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      height: 44px;
+      padding: 0 12px;
+      background: rgba(20, 23, 34, 0.98);
+      color: var(--muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+      cursor: pointer;
+    }
+
+    tbody tr:hover {
+      transform: translateY(-2px);
+      background: rgba(34, 38, 58, 0.62);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+    }
+
+    tbody td {
+      height: 68px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .star-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      color: var(--muted);
+      background: transparent;
+      transition: transform 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .star-btn:hover {
+      transform: scale(1.08);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .star-btn.active {
+      color: var(--yellow);
+    }
+
+    .doc-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .doc-icon {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(108, 99, 255, 0.1));
+      font-size: 22px;
+    }
+
+    .doc-title {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+
+    .doc-meta {
+      max-width: 320px;
+      margin-top: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .chip,
+    .type-badge,
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .subject-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .tag-list {
+      display: flex;
+      max-width: 220px;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .tag-chip {
+      max-width: 94px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(108, 99, 255, 0.16);
+      color: #ddd6fe;
+      border-color: rgba(167, 139, 250, 0.22);
+    }
+
+    .type-pdf { background: rgba(239, 68, 68, 0.14); color: #fecaca; border-color: rgba(239, 68, 68, 0.25); }
+    .type-docx { background: rgba(59, 130, 246, 0.16); color: #bfdbfe; border-color: rgba(59, 130, 246, 0.25); }
+    .type-pptx { background: rgba(249, 115, 22, 0.16); color: #fed7aa; border-color: rgba(249, 115, 22, 0.26); }
+    .type-xlsx, .type-csv { background: rgba(34, 197, 94, 0.16); color: #bbf7d0; border-color: rgba(34, 197, 94, 0.25); }
+    .type-jpg, .type-png, .type-image { background: rgba(236, 72, 153, 0.16); color: #fbcfe8; border-color: rgba(236, 72, 153, 0.26); }
+    .type-mp4, .type-video { background: rgba(108, 99, 255, 0.18); color: #ddd6fe; border-color: rgba(167, 139, 250, 0.25); }
+    .type-zip { background: rgba(245, 158, 11, 0.16); color: #fde68a; border-color: rgba(245, 158, 11, 0.27); }
+    .type-other, .type-txt, .type-md { background: rgba(136, 146, 164, 0.16); color: #cbd5e1; border-color: rgba(136, 146, 164, 0.24); }
+
+    .source-local {
+      background: rgba(34, 197, 94, 0.13);
+      color: #bbf7d0;
+      border-color: rgba(34, 197, 94, 0.25);
+    }
+
+    .source-drive {
+      background: rgba(59, 130, 246, 0.13);
+      color: #bfdbfe;
+      border-color: rgba(59, 130, 246, 0.25);
+    }
+
+    .date-cell,
+    .views-cell {
+      color: var(--muted);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(34, 38, 58, 0.72);
+      border: 1px solid var(--border);
+      transition: color 160ms ease, background 160ms ease, transform 160ms ease, border-color 160ms ease;
+    }
+
+    .action-btn:hover {
+      color: var(--text);
+      background: rgba(108, 99, 255, 0.18);
+      border-color: rgba(167, 139, 250, 0.38);
+      transform: translateY(-1px);
+    }
+
+    .action-btn.delete:hover {
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.32);
+    }
+
+    .empty-state {
+      display: none;
+      min-height: 280px;
+      place-items: center;
+      color: var(--muted);
+      text-align: center;
+      padding: 30px;
+    }
+
+    .empty-card {
+      width: min(360px, 100%);
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(34, 38, 58, 0.48);
+      box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .empty-icon {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 14px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.28), rgba(20, 184, 166, 0.16));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 25px;
+    }
+
+    .empty-state strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .statsbar {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 10px;
+      background: rgba(17, 20, 31, 0.66);
+    }
+
+    .stat {
+      min-width: 0;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(34, 38, 58, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.055);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-value {
+      margin-top: 3px;
+      color: var(--text);
+      font-size: 20px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .mobile-subject-strip {
+      display: none;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background: rgba(4, 6, 12, 0.68);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(880px, 100%);
+      max-height: min(88vh, 820px);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border: 1px solid rgba(167, 139, 250, 0.22);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #1b1f2d, #151822);
+      box-shadow: var(--shadow);
+      animation: modalIn 180ms ease both;
+      overflow: hidden;
+    }
+
+    .subject-modal {
+      width: min(460px, 100%);
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header,
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-footer {
+      justify-content: flex-end;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 0;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .modal-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--border);
+    }
+
+    .upload-zone {
+      display: grid;
+      place-items: center;
+      min-height: 150px;
+      border: 1px dashed rgba(167, 139, 250, 0.56);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.12), rgba(20, 184, 166, 0.07));
+      transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+      cursor: pointer;
+      text-align: center;
+      padding: 18px;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--accent2);
+      background: rgba(108, 99, 255, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .upload-zone strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .upload-zone span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .progress {
+      display: none;
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 180ms ease;
+    }
+
+    .file-preview {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(34, 38, 58, 0.64);
+      padding: 12px;
+    }
+
+    .preview-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .preview-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 800;
+    }
+
+    .preview-size {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(5, 40px);
+      gap: 10px;
+    }
+
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .swatch:hover,
+    .swatch.active {
+      transform: scale(1.08);
+      border-color: #fff;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+    }
+
+    .toast-stack {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 80;
+      display: grid;
+      gap: 10px;
+      width: min(360px, calc(100vw - 36px));
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid rgba(167, 139, 250, 0.22);
+      border-radius: 8px;
+      background: rgba(22, 25, 36, 0.98);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      animation: toastIn 180ms ease both;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translate(18px, 24px); }
+      to { opacity: 1; transform: translate(0, 0); }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        overflow: hidden;
+      }
+
+      .header {
+        height: 64px;
+        padding: 0 12px;
+      }
+
+      .app-shell {
+        grid-template-rows: 64px calc(100vh - 64px);
+      }
+
+      .brand-text {
+        font-size: 19px;
+      }
+
+      .clock {
+        display: none;
+      }
+
+      .header-actions {
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 0 10px;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+        min-height: 0;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        z-index: 35;
+        height: 64px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 48px;
+        gap: 6px;
+        padding: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        background: rgba(18, 21, 31, 0.92);
+        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.36);
+        backdrop-filter: blur(20px) saturate(1.35);
+        overflow: hidden;
+      }
+
+      .sidebar .side-section:first-child {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 4px;
+        margin: 0;
+      }
+
+      .sidebar .side-section:nth-child(2) {
+        display: none;
+      }
+
+      .side-title,
+      .nav-label,
+      .subject-name,
+      .badge,
+      .new-subject span {
+        display: none;
+      }
+
+      .nav-item,
+      .subject-item,
+      .new-subject {
+        justify-content: center;
+        padding: 0;
+        min-height: 0;
+      }
+
+      .nav-item,
+      .new-subject {
+        min-width: 0;
+        height: 52px;
+        border-radius: 8px;
+      }
+
+      .new-subject {
+        width: 48px;
+        margin-top: 0;
+      }
+
+      .nav-icon {
+        width: auto;
+        flex-basis: auto;
+      }
+
+      .main {
+        overflow-y: auto;
+        grid-template-rows: auto auto auto minmax(180px, auto) auto;
+        padding: 12px 12px 88px;
+        gap: 10px;
+      }
+
+      .workspace-panel {
+        display: grid;
+        min-height: auto;
+        padding: 13px;
+      }
+
+      .workspace-title {
+        font-size: 24px;
+      }
+
+      .eyebrow {
+        margin-bottom: 4px;
+      }
+
+      .view-summary {
+        margin-top: 6px;
+        font-size: 13px;
+      }
+
+      .workspace-pills {
+        justify-content: flex-start;
+        gap: 6px;
+      }
+
+      .status-pill {
+        min-height: 30px;
+        padding: 0 9px;
+      }
+
+      .tabbar {
+        display: none;
+      }
+
+      .mobile-subject-strip {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 2px 0 4px;
+      }
+
+      .subject-chip-filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        flex: 0 0 auto;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        color: var(--muted);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(34, 38, 58, 0.72);
+        font-size: 13px;
+        font-weight: 850;
+        transition: transform 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease;
+      }
+
+      .subject-chip-filter.active,
+      .subject-chip-filter:hover {
+        color: #fff;
+        background: rgba(108, 99, 255, 0.28);
+        border-color: rgba(167, 139, 250, 0.34);
+        transform: translateY(-1px);
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .table-wrap {
+        overflow-x: hidden;
+        padding: 10px;
+        min-height: 170px;
+        max-height: none;
+      }
+
+      table,
+      tbody,
+      tr,
+      td {
+        display: block;
+        width: 100%;
+      }
+
+      table {
+        min-width: 0;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody {
+        display: grid;
+        gap: 10px;
+      }
+
+      tbody tr {
+        display: grid;
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 2px 10px;
+        padding: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        background: rgba(26, 29, 39, 0.82);
+      }
+
+      tbody tr:hover {
+        transform: translateY(-1px);
+      }
+
+      tbody td {
+        height: auto;
+        padding: 0;
+        border-bottom: 0;
+      }
+
+      tbody td:nth-child(1) {
+        grid-row: span 2;
+      }
+
+      tbody td:nth-child(2) {
+        min-width: 0;
+      }
+
+      tbody td:nth-child(3),
+      tbody td:nth-child(4),
+      tbody td:nth-child(5),
+      tbody td:nth-child(6),
+      tbody td:nth-child(7),
+      tbody td:nth-child(8),
+      tbody td:nth-child(9) {
+        grid-column: 2;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 7px;
+      }
+
+      tbody td:nth-child(3)::before { content: "Subject"; }
+      tbody td:nth-child(4)::before { content: "Type"; }
+      tbody td:nth-child(5)::before { content: "Source"; }
+      tbody td:nth-child(6)::before { content: "Tags"; }
+      tbody td:nth-child(7)::before { content: "Date"; }
+      tbody td:nth-child(8)::before { content: "Views"; }
+
+      tbody td:nth-child(3)::before,
+      tbody td:nth-child(4)::before,
+      tbody td:nth-child(5)::before,
+      tbody td:nth-child(6)::before,
+      tbody td:nth-child(7)::before,
+      tbody td:nth-child(8)::before {
+        width: 58px;
+        flex: 0 0 58px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .doc-title,
+      .doc-meta {
+        max-width: 100%;
+      }
+
+      .doc-icon {
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+      }
+
+      .tag-list {
+        flex-wrap: wrap;
+        max-width: 100%;
+      }
+
+      .row-actions {
+        margin-top: 4px;
+      }
+
+      .statsbar {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 8px;
+        order: 4;
+      }
+
+      .stat {
+        min-width: 112px;
+        padding: 8px;
+      }
+
+      .stat-value {
+        font-size: 18px;
+      }
+
+      .modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .modal {
+        width: 100%;
+        max-height: 92vh;
+        border-radius: 16px 16px 0 0;
+        animation: sheetIn 190ms ease both;
+      }
+
+      .modal-header .btn.icon-only {
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+      }
+
+      @keyframes sheetIn {
+        from { opacity: 0; transform: translateY(100%); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toast-stack {
+        right: 12px;
+        bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="header">
+      <div class="brand" aria-label="DocVault">
+        <span class="brand-mark" aria-hidden="true">📚</span>
+        <span class="brand-text">DocVault</span>
+      </div>
+      <div class="header-actions">
+        <div class="clock" id="clock" aria-live="polite">--:--</div>
+        <button class="btn ghost" id="installBtn" type="button">Install App</button>
+        <button class="btn primary" id="addDocBtn" type="button">＋ Add Document</button>
+      </div>
+    </header>
+
+    <div class="content-grid">
+      <aside class="sidebar" aria-label="Library navigation">
+        <section class="side-section">
+          <h2 class="side-title">VIEWS</h2>
+          <button class="nav-item active" data-view="all" type="button"><span class="nav-icon">📁</span><span class="nav-label">All Documents</span><span class="badge" id="allBadge">0</span></button>
+          <button class="nav-item" data-view="starred" type="button"><span class="nav-icon">⭐</span><span class="nav-label">Starred</span><span class="badge" id="starredBadge">0</span></button>
+          <button class="nav-item" data-view="recent" type="button"><span class="nav-icon">🕒</span><span class="nav-label">Recently Opened</span></button>
+          <button class="nav-item" data-view="local" type="button"><span class="nav-icon">💾</span><span class="nav-label">Uploaded Files</span><span class="badge" id="localBadge">0</span></button>
+          <button class="nav-item" data-view="drive" type="button"><span class="nav-icon">🔗</span><span class="nav-label">Drive Links</span><span class="badge" id="driveBadge">0</span></button>
+        </section>
+        <section class="side-section">
+          <h2 class="side-title">SUBJECTS</h2>
+          <div id="subjectNav"></div>
+        </section>
+        <button class="btn new-subject" id="newSubjectBtn" type="button">＋ <span>New Subject</span></button>
+      </aside>
+
+      <main class="main">
+        <section class="workspace-panel" aria-label="Library overview">
+          <div>
+            <p class="eyebrow">Student Vault</p>
+            <h1 class="workspace-title" id="viewTitle">All Documents</h1>
+            <p class="view-summary" id="viewSummary">0 documents across 5 subjects</p>
+          </div>
+          <div class="workspace-pills">
+            <span class="status-pill" id="activeSubjectPill"><span class="dot" style="background:#14b8a6"></span>All subjects</span>
+            <span class="status-pill" id="sourcePill"><span class="dot" style="background:#22c55e"></span>0 uploaded</span>
+            <span class="status-pill" id="viewsPill"><span class="dot" style="background:#f59e0b"></span>0 views</span>
+          </div>
+        </section>
+
+        <nav class="tabbar" aria-label="Document views">
+          <button class="tab active" data-view="all" type="button">All</button>
+          <button class="tab" data-view="starred" type="button">⭐ Starred</button>
+          <button class="tab" data-view="recent" type="button">🕒 Recent</button>
+          <button class="tab" data-view="local" type="button">💾 Uploaded</button>
+          <button class="tab" data-view="drive" type="button">🔗 Drive</button>
+        </nav>
+
+        <div class="mobile-subject-strip" id="mobileSubjectStrip" aria-label="Subject filters"></div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <input id="searchInput" type="search" placeholder="Search names, tags, notes..." autocomplete="off">
+            <span class="shortcut">Ctrl K</span>
+          </div>
+          <select id="sortSelect" aria-label="Sort documents">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="az">A→Z</option>
+            <option value="za">Z→A</option>
+            <option value="views">Most Viewed</option>
+            <option value="type">By Type</option>
+          </select>
+        </div>
+
+        <section class="table-wrap" aria-label="Documents">
+          <table>
+            <thead>
+              <tr>
+                <th>★</th>
+                <th>Document</th>
+                <th>Subject</th>
+                <th>Type</th>
+                <th>Source</th>
+                <th>Tags</th>
+                <th>Date</th>
+                <th>Views</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="docTable"></tbody>
+          </table>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-card">
+              <div class="empty-icon">📚</div>
+              <strong>No documents found</strong>
+              <span>Add a document or adjust your filters.</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="statsbar" aria-label="Library stats">
+          <div class="stat"><div class="stat-label">Total Docs</div><div class="stat-value" id="statTotal">0</div></div>
+          <div class="stat"><div class="stat-label">Uploaded</div><div class="stat-value" id="statLocal">0</div></div>
+          <div class="stat"><div class="stat-label">Drive Links</div><div class="stat-value" id="statDrive">0</div></div>
+          <div class="stat"><div class="stat-label">Subjects</div><div class="stat-value" id="statSubjects">0</div></div>
+          <div class="stat"><div class="stat-label">Total Views</div><div class="stat-value" id="statViews">0</div></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="docModal" role="dialog" aria-modal="true" aria-labelledby="docModalTitle">
+    <form class="modal" id="docForm">
+      <div class="modal-header">
+        <h2 class="modal-title" id="docModalTitle">Add Document</h2>
+        <button class="btn icon-only ghost" type="button" data-close-modal aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field">
+            <label for="docName">Document Name*</label>
+            <input id="docName" required type="text" maxlength="140">
+          </div>
+          <div class="field">
+            <label for="docSubject">Subject</label>
+            <select id="docSubject"></select>
+          </div>
+          <div class="field">
+            <label for="docType">File Type*</label>
+            <select id="docType" required>
+              <option value="PDF">PDF</option>
+              <option value="DOCX">DOCX</option>
+              <option value="PPTX">PPTX</option>
+              <option value="XLSX">XLSX</option>
+              <option value="JPG">JPG</option>
+              <option value="MP4">MP4</option>
+              <option value="ZIP">ZIP</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="docDate">Date</label>
+            <input id="docDate" type="date">
+          </div>
+          <div class="field full">
+            <label for="docLink">File Link URL</label>
+            <input id="docLink" type="url" placeholder="https://drive.google.com/...">
+          </div>
+          <div class="field full divider">— OR UPLOAD LOCAL FILE —</div>
+          <div class="field full">
+            <input id="fileInput" type="file" hidden>
+            <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload local file">
+              <div>
+                <strong>Drop a file here or click to browse</strong>
+                <span>Auto-fills name, type, size, and source.</span>
+              </div>
+            </div>
+          </div>
+          <div class="field full">
+            <div class="progress" id="progress"><div class="progress-bar" id="progressBar"></div></div>
+          </div>
+          <div class="field full file-preview" id="filePreview">
+            <div class="preview-info">
+              <div class="doc-icon" id="previewIcon">📦</div>
+              <div>
+                <div class="preview-name" id="previewName"></div>
+                <div class="preview-size" id="previewSize"></div>
+              </div>
+            </div>
+            <button class="btn icon-only ghost" type="button" id="clearFileBtn" aria-label="Clear file">✕</button>
+          </div>
+          <div class="field full">
+            <label for="docTags">Tags</label>
+            <input id="docTags" type="text" placeholder="revision, lab, semester 2">
+          </div>
+          <div class="field full">
+            <label for="docNotes">Notes</label>
+            <textarea id="docNotes" placeholder="Add a short note..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" type="button" data-close-modal>Cancel</button>
+        <button class="btn primary" type="submit">Save Document</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-backdrop" id="subjectModal" role="dialog" aria-modal="true" aria-labelledby="subjectModalTitle">
+    <form class="modal subject-modal" id="subjectForm">
+      <div class="modal-header">
+        <h2 class="modal-title" id="subjectModalTitle">New Subject</h2>
+        <button class="btn icon-only ghost" type="button" data-close-modal aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field full">
+            <label for="subjectName">Subject name</label>
+            <input id="subjectName" required type="text" maxlength="60">
+          </div>
+          <div class="field full">
+            <label>Color</label>
+            <div class="swatches" id="swatches"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn ghost" type="button" data-close-modal>Cancel</button>
+        <button class="btn primary" type="submit">Save Subject</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+  <script>
+    const DOCS_KEY = "dv_docs";
+    const SUBJECTS_KEY = "dv_subjects";
+    const DB_NAME = "DocVaultDB";
+    const STORE_NAME = "files";
+    const subjectColors = ["#6c63ff", "#a78bfa", "#22c55e", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"];
+    const defaultSubjects = [
+      { id: "sub_physics", name: "Physics", color: "#6c63ff" },
+      { id: "sub_chemistry", name: "Chemistry", color: "#22c55e" },
+      { id: "sub_mathematics", name: "Mathematics", color: "#f59e0b" },
+      { id: "sub_computer_science", name: "Computer Science", color: "#3b82f6" },
+      { id: "sub_english", name: "English", color: "#ec4899" }
+    ];
+
+    let docs = loadJSON(DOCS_KEY, []);
+    let subjects = loadJSON(SUBJECTS_KEY, defaultSubjects);
+    let activeView = "all";
+    let activeSubjectId = null;
+    let editingDocId = null;
+    let selectedFile = null;
+    let deferredPrompt = null;
+    let selectedSubjectColor = subjectColors[0];
+
+    const els = {
+      clock: document.getElementById("clock"),
+      installBtn: document.getElementById("installBtn"),
+      addDocBtn: document.getElementById("addDocBtn"),
+      newSubjectBtn: document.getElementById("newSubjectBtn"),
+      viewTitle: document.getElementById("viewTitle"),
+      viewSummary: document.getElementById("viewSummary"),
+      activeSubjectPill: document.getElementById("activeSubjectPill"),
+      sourcePill: document.getElementById("sourcePill"),
+      viewsPill: document.getElementById("viewsPill"),
+      mobileSubjectStrip: document.getElementById("mobileSubjectStrip"),
+      subjectNav: document.getElementById("subjectNav"),
+      docTable: document.getElementById("docTable"),
+      emptyState: document.getElementById("emptyState"),
+      searchInput: document.getElementById("searchInput"),
+      sortSelect: document.getElementById("sortSelect"),
+      docModal: document.getElementById("docModal"),
+      docForm: document.getElementById("docForm"),
+      docModalTitle: document.getElementById("docModalTitle"),
+      docName: document.getElementById("docName"),
+      docSubject: document.getElementById("docSubject"),
+      docType: document.getElementById("docType"),
+      docLink: document.getElementById("docLink"),
+      docDate: document.getElementById("docDate"),
+      docTags: document.getElementById("docTags"),
+      docNotes: document.getElementById("docNotes"),
+      fileInput: document.getElementById("fileInput"),
+      uploadZone: document.getElementById("uploadZone"),
+      progress: document.getElementById("progress"),
+      progressBar: document.getElementById("progressBar"),
+      filePreview: document.getElementById("filePreview"),
+      previewIcon: document.getElementById("previewIcon"),
+      previewName: document.getElementById("previewName"),
+      previewSize: document.getElementById("previewSize"),
+      clearFileBtn: document.getElementById("clearFileBtn"),
+      subjectModal: document.getElementById("subjectModal"),
+      subjectForm: document.getElementById("subjectForm"),
+      subjectName: document.getElementById("subjectName"),
+      swatches: document.getElementById("swatches"),
+      toastStack: document.getElementById("toastStack")
+    };
+
+    init();
+
+    function init() {
+      saveJSON(SUBJECTS_KEY, subjects);
+      buildSwatches();
+      bindEvents();
+      tickClock();
+      setInterval(tickClock, 1000);
+      render();
+      registerServiceWorker();
+    }
+
+    function bindEvents() {
+      els.addDocBtn.addEventListener("click", () => openDocModal());
+      els.newSubjectBtn.addEventListener("click", () => openSubjectModal());
+      els.installBtn.addEventListener("click", installPWA);
+      els.searchInput.addEventListener("input", render);
+      els.sortSelect.addEventListener("change", render);
+      els.docForm.addEventListener("submit", saveDocument);
+      els.subjectForm.addEventListener("submit", saveSubject);
+      els.uploadZone.addEventListener("click", () => els.fileInput.click());
+      els.uploadZone.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          els.fileInput.click();
+        }
+      });
+      els.fileInput.addEventListener("change", event => {
+        const file = event.target.files[0];
+        if (file) handleFile(file);
+      });
+      els.clearFileBtn.addEventListener("click", clearSelectedFile);
+
+      ["dragenter", "dragover"].forEach(type => {
+        els.uploadZone.addEventListener(type, event => {
+          event.preventDefault();
+          els.uploadZone.classList.add("dragover");
+        });
+      });
+      ["dragleave", "drop"].forEach(type => {
+        els.uploadZone.addEventListener(type, event => {
+          event.preventDefault();
+          els.uploadZone.classList.remove("dragover");
+        });
+      });
+      els.uploadZone.addEventListener("drop", event => {
+        const file = event.dataTransfer.files[0];
+        if (file) handleFile(file);
+      });
+
+      document.querySelectorAll("[data-close-modal]").forEach(button => {
+        button.addEventListener("click", closeModals);
+      });
+
+      document.querySelectorAll(".modal-backdrop").forEach(backdrop => {
+        backdrop.addEventListener("click", event => {
+          if (event.target === backdrop) closeModals();
+        });
+      });
+
+      document.querySelectorAll("[data-view]").forEach(button => {
+        button.addEventListener("click", () => setView(button.dataset.view));
+      });
+
+      document.addEventListener("keydown", event => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+          event.preventDefault();
+          els.searchInput.focus();
+        }
+        if (event.key === "Escape") closeModals();
+      });
+
+      window.addEventListener("beforeinstallprompt", event => {
+        event.preventDefault();
+        deferredPrompt = event;
+        els.installBtn.style.display = "inline-flex";
+      });
+    }
+
+    function loadJSON(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : structuredClone(fallback);
+      } catch (error) {
+        return structuredClone(fallback);
+      }
+    }
+
+    function saveJSON(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function tickClock() {
+      const now = new Date();
+      els.clock.textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+    }
+
+    function setView(view) {
+      activeView = view;
+      document.querySelectorAll("[data-view]").forEach(button => {
+        button.classList.toggle("active", button.dataset.view === view);
+      });
+      render();
+    }
+
+    function render() {
+      renderSubjects();
+      renderSubjectOptions();
+      renderDocs();
+      renderStats();
+    }
+
+    function renderSubjects() {
+      const counts = countBy(docs, doc => doc.subjectId || "none");
+      els.subjectNav.innerHTML = subjects.map(subject => `
+        <button class="subject-item ${activeSubjectId === subject.id ? "active" : ""}" data-subject-id="${subject.id}" type="button" title="${escapeHTML(subject.name)}">
+          <span class="dot" style="background:${subject.color}"></span>
+          <span class="subject-name">${escapeHTML(subject.name)}</span>
+          <span class="badge">${counts[subject.id] || 0}</span>
+        </button>
+      `).join("");
+      els.mobileSubjectStrip.innerHTML = `
+        <button class="subject-chip-filter ${activeSubjectId ? "" : "active"}" data-mobile-subject-id="" type="button">All</button>
+        ${subjects.map(subject => `
+          <button class="subject-chip-filter ${activeSubjectId === subject.id ? "active" : ""}" data-mobile-subject-id="${subject.id}" type="button">
+            <span class="dot" style="background:${subject.color}"></span>${escapeHTML(subject.name)}
+          </button>
+        `).join("")}
+      `;
+
+      els.subjectNav.querySelectorAll("[data-subject-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          activeSubjectId = activeSubjectId === button.dataset.subjectId ? null : button.dataset.subjectId;
+          render();
+        });
+      });
+      els.mobileSubjectStrip.querySelectorAll("[data-mobile-subject-id]").forEach(button => {
+        button.addEventListener("click", () => {
+          const id = button.dataset.mobileSubjectId;
+          activeSubjectId = id || null;
+          render();
+        });
+      });
+    }
+
+    function renderSubjectOptions() {
+      els.docSubject.innerHTML = `<option value="">No subject</option>` + subjects.map(subject => (
+        `<option value="${subject.id}">${escapeHTML(subject.name)}</option>`
+      )).join("");
+    }
+
+    function renderDocs() {
+      const filtered = getFilteredDocs();
+      els.docTable.innerHTML = filtered.map(doc => rowTemplate(doc)).join("");
+      els.emptyState.style.display = filtered.length ? "none" : "grid";
+      els.docTable.closest("table").style.display = filtered.length ? "table" : "none";
+
+      els.docTable.querySelectorAll("tr[data-doc-id]").forEach(row => {
+        row.addEventListener("click", () => openDocument(row.dataset.docId));
+      });
+      els.docTable.querySelectorAll("[data-action]").forEach(button => {
+        button.addEventListener("click", event => {
+          event.stopPropagation();
+          handleRowAction(button.dataset.action, button.dataset.docId);
+        });
+      });
+    }
+
+    function rowTemplate(doc) {
+      const subject = subjects.find(item => item.id === doc.subjectId);
+      const tags = (doc.tags || []).slice(0, 3).map(tag => `<span class="chip tag-chip">${escapeHTML(tag)}</span>`).join("");
+      const notes = doc.notes ? ` • ${doc.notes}` : "";
+      const sourceLabel = doc.source === "local" ? "💾 Local" : "🔗 Drive";
+      const openLabel = doc.source === "local" ? "↗️" : "🔗";
+      return `
+        <tr data-doc-id="${doc.id}">
+          <td><button class="star-btn ${doc.starred ? "active" : ""}" data-action="star" data-doc-id="${doc.id}" type="button" title="Toggle starred">★</button></td>
+          <td>
+            <div class="doc-cell">
+              <div class="doc-icon">${fileIcon(doc.type)}</div>
+              <div>
+                <div class="doc-title">${escapeHTML(doc.name)}</div>
+                <div class="doc-meta">${escapeHTML(formatBytes(doc.size) || doc.originalName || "No file size")}${escapeHTML(notes)}</div>
+              </div>
+            </div>
+          </td>
+          <td>${subject ? `<span class="chip subject-chip"><span class="dot" style="background:${subject.color}"></span>${escapeHTML(subject.name)}</span>` : `<span class="chip subject-chip">Unsorted</span>`}</td>
+          <td><span class="type-badge type-${typeClass(doc.type)}">${escapeHTML(normalizeType(doc.type))}</span></td>
+          <td><span class="source-badge source-${doc.source}">${sourceLabel}</span></td>
+          <td><div class="tag-list">${tags || `<span class="chip tag-chip">No tags</span>`}</div></td>
+          <td class="date-cell">${formatDate(doc.date)}</td>
+          <td class="views-cell">${doc.views || 0}</td>
+          <td>
+            <div class="row-actions">
+              ${doc.source === "local" ? `<button class="action-btn" data-action="download" data-doc-id="${doc.id}" type="button" title="Download">⬇️</button>` : ""}
+              <button class="action-btn" data-action="open" data-doc-id="${doc.id}" type="button" title="Open">${openLabel}</button>
+              <button class="action-btn" data-action="edit" data-doc-id="${doc.id}" type="button" title="Edit">✎</button>
+              <button class="action-btn delete" data-action="delete" data-doc-id="${doc.id}" type="button" title="Delete">✕</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function getFilteredDocs() {
+      const query = els.searchInput.value.trim().toLowerCase();
+      let result = [...docs];
+
+      if (activeView === "starred") result = result.filter(doc => doc.starred);
+      if (activeView === "local") result = result.filter(doc => doc.source === "local");
+      if (activeView === "drive") result = result.filter(doc => doc.source === "drive");
+      if (activeView === "recent") {
+        result = result
+          .filter(doc => doc.lastOpened)
+          .sort((a, b) => new Date(b.lastOpened) - new Date(a.lastOpened))
+          .slice(0, 20);
+      }
+      if (activeSubjectId) result = result.filter(doc => doc.subjectId === activeSubjectId);
+      if (query) {
+        result = result.filter(doc => [doc.name, doc.notes, ...(doc.tags || [])].join(" ").toLowerCase().includes(query));
+      }
+      if (activeView !== "recent") result = sortDocs(result, els.sortSelect.value);
+      return result;
+    }
+
+    function sortDocs(list, sort) {
+      const sorted = [...list];
+      const created = doc => new Date(doc.createdAt || doc.date || 0).getTime();
+      const name = doc => (doc.name || "").toLowerCase();
+      const type = doc => normalizeType(doc.type).toLowerCase();
+      if (sort === "newest") sorted.sort((a, b) => created(b) - created(a));
+      if (sort === "oldest") sorted.sort((a, b) => created(a) - created(b));
+      if (sort === "az") sorted.sort((a, b) => name(a).localeCompare(name(b)));
+      if (sort === "za") sorted.sort((a, b) => name(b).localeCompare(name(a)));
+      if (sort === "views") sorted.sort((a, b) => (b.views || 0) - (a.views || 0));
+      if (sort === "type") sorted.sort((a, b) => type(a).localeCompare(type(b)) || name(a).localeCompare(name(b)));
+      return sorted;
+    }
+
+    function renderStats() {
+      const localCount = docs.filter(doc => doc.source === "local").length;
+      const driveCount = docs.filter(doc => doc.source === "drive").length;
+      const totalViews = docs.reduce((sum, doc) => sum + (doc.views || 0), 0);
+      const activeSubject = subjects.find(subject => subject.id === activeSubjectId);
+      const viewLabels = {
+        all: "All Documents",
+        starred: "Starred Documents",
+        recent: "Recently Opened",
+        local: "Uploaded Files",
+        drive: "Drive Links"
+      };
+      const visibleCount = getFilteredDocs().length;
+      document.getElementById("allBadge").textContent = docs.length;
+      document.getElementById("starredBadge").textContent = docs.filter(doc => doc.starred).length;
+      document.getElementById("localBadge").textContent = localCount;
+      document.getElementById("driveBadge").textContent = driveCount;
+      document.getElementById("statTotal").textContent = docs.length;
+      document.getElementById("statLocal").textContent = localCount;
+      document.getElementById("statDrive").textContent = driveCount;
+      document.getElementById("statSubjects").textContent = subjects.length;
+      document.getElementById("statViews").textContent = totalViews;
+      els.viewTitle.textContent = activeSubject ? activeSubject.name : viewLabels[activeView];
+      els.viewSummary.textContent = `${visibleCount} shown · ${docs.length} total · ${subjects.length} subjects`;
+      els.activeSubjectPill.innerHTML = activeSubject
+        ? `<span class="dot" style="background:${activeSubject.color}"></span>${escapeHTML(activeSubject.name)}`
+        : `<span class="dot" style="background:#14b8a6"></span>All subjects`;
+      els.sourcePill.innerHTML = `<span class="dot" style="background:#22c55e"></span>${localCount} uploaded`;
+      els.viewsPill.innerHTML = `<span class="dot" style="background:#f59e0b"></span>${totalViews} views`;
+    }
+
+    function openDocModal(doc = null) {
+      editingDocId = doc ? doc.id : null;
+      selectedFile = null;
+      els.docModalTitle.textContent = doc ? "Edit Document" : "Add Document";
+      els.docForm.reset();
+      els.docDate.value = today();
+      clearSelectedFile(false);
+
+      if (doc) {
+        els.docName.value = doc.name || "";
+        els.docSubject.value = doc.subjectId || "";
+        els.docType.value = normalizeTypeForForm(doc.type);
+        els.docLink.value = doc.link || "";
+        els.docDate.value = doc.date || today();
+        els.docTags.value = (doc.tags || []).join(", ");
+        els.docNotes.value = doc.notes || "";
+        if (doc.source === "local") showExistingFilePreview(doc);
+      }
+
+      els.docModal.classList.add("open");
+      setTimeout(() => els.docName.focus(), 60);
+    }
+
+    function openSubjectModal() {
+      selectedSubjectColor = subjectColors[0];
+      els.subjectForm.reset();
+      updateSwatches();
+      els.subjectModal.classList.add("open");
+      setTimeout(() => els.subjectName.focus(), 60);
+    }
+
+    function closeModals() {
+      document.querySelectorAll(".modal-backdrop.open").forEach(modal => modal.classList.remove("open"));
+    }
+
+    async function saveDocument(event) {
+      event.preventDefault();
+      const now = new Date().toISOString();
+      const existing = docs.find(doc => doc.id === editingDocId);
+      const id = existing ? existing.id : crypto.randomUUID();
+      const link = els.docLink.value.trim();
+      const hasExistingLocalFile = !!(existing && existing.source === "local" && existing.originalName);
+      const source = selectedFile || hasExistingLocalFile ? "local" : "drive";
+
+      if (!link && !selectedFile && !hasExistingLocalFile) {
+        showToast("❌ Add a link or upload a file", "error");
+        return;
+      }
+
+      let fileMeta = existing ? {
+        size: existing.size || 0,
+        originalName: existing.originalName || "",
+        type: existing.type || els.docType.value
+      } : { size: 0, originalName: "", type: els.docType.value };
+
+      try {
+        if (selectedFile) {
+          await putFile(id, selectedFile);
+          fileMeta = {
+            size: selectedFile.size,
+            originalName: selectedFile.name,
+            type: typeFromFile(selectedFile.name, selectedFile.type)
+          };
+        }
+      } catch (error) {
+        showToast("❌ Could not save file data", "error");
+        return;
+      }
+
+      const doc = {
+        id,
+        name: els.docName.value.trim(),
+        type: selectedFile ? fileMeta.type : els.docType.value,
+        subjectId: els.docSubject.value,
+        source,
+        link,
+        tags: els.docTags.value.split(",").map(tag => tag.trim()).filter(Boolean),
+        notes: els.docNotes.value.trim(),
+        date: els.docDate.value || today(),
+        size: fileMeta.size,
+        originalName: fileMeta.originalName,
+        starred: existing ? !!existing.starred : false,
+        views: existing ? existing.views || 0 : 0,
+        lastOpened: existing ? existing.lastOpened || null : null,
+        createdAt: existing ? existing.createdAt || now : now
+      };
+
+      docs = existing ? docs.map(item => item.id === id ? doc : item) : [doc, ...docs];
+      saveJSON(DOCS_KEY, docs);
+      closeModals();
+      render();
+      showToast("✅ Saved");
+    }
+
+    function saveSubject(event) {
+      event.preventDefault();
+      const name = els.subjectName.value.trim();
+      if (!name) return;
+      subjects = [...subjects, { id: crypto.randomUUID(), name, color: selectedSubjectColor }];
+      saveJSON(SUBJECTS_KEY, subjects);
+      closeModals();
+      render();
+      showToast("✅ Saved");
+    }
+
+    function handleFile(file) {
+      selectedFile = file;
+      const inferredType = typeFromFile(file.name, file.type);
+      const baseName = file.name.replace(/\.[^/.]+$/, "");
+      if (!els.docName.value.trim()) els.docName.value = baseName;
+      els.docType.value = normalizeTypeForForm(inferredType);
+      showUploadProgress();
+      els.previewIcon.textContent = fileIcon(inferredType);
+      els.previewName.textContent = file.name;
+      els.previewSize.textContent = formatBytes(file.size);
+      els.filePreview.style.display = "flex";
+    }
+
+    function showUploadProgress() {
+      els.progress.style.display = "block";
+      els.progressBar.style.width = "0%";
+      let value = 0;
+      const timer = setInterval(() => {
+        value += 20;
+        els.progressBar.style.width = `${Math.min(value, 100)}%`;
+        if (value >= 100) {
+          clearInterval(timer);
+          setTimeout(() => {
+            els.progress.style.display = "none";
+            els.progressBar.style.width = "0%";
+          }, 350);
+        }
+      }, 80);
+    }
+
+    function clearSelectedFile(resetInput = true) {
+      selectedFile = null;
+      if (resetInput) els.fileInput.value = "";
+      els.filePreview.style.display = "none";
+      els.progress.style.display = "none";
+      els.progressBar.style.width = "0%";
+    }
+
+    function showExistingFilePreview(doc) {
+      els.previewIcon.textContent = fileIcon(doc.type);
+      els.previewName.textContent = doc.originalName || doc.name;
+      els.previewSize.textContent = formatBytes(doc.size);
+      els.filePreview.style.display = "flex";
+    }
+
+    function handleRowAction(action, id) {
+      const doc = docs.find(item => item.id === id);
+      if (!doc) return;
+      if (action === "star") toggleStar(id);
+      if (action === "open") openDocument(id);
+      if (action === "download") downloadDocument(id);
+      if (action === "edit") openDocModal(doc);
+      if (action === "delete") deleteDocument(id);
+    }
+
+    function toggleStar(id) {
+      docs = docs.map(doc => doc.id === id ? { ...doc, starred: !doc.starred } : doc);
+      saveJSON(DOCS_KEY, docs);
+      render();
+      showToast("⭐ Starred");
+    }
+
+    async function openDocument(id) {
+      const doc = docs.find(item => item.id === id);
+      if (!doc) return;
+      trackOpen(id);
+      if (doc.source === "drive" && doc.link) {
+        window.open(doc.link, "_blank", "noopener");
+        return;
+      }
+      try {
+        const file = await getFile(id);
+        if (!file) {
+          showToast("❌ Local file data not found", "error");
+          return;
+        }
+        const url = URL.createObjectURL(file.blob);
+        window.open(url, "_blank", "noopener");
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } catch (error) {
+        showToast("❌ Could not open file", "error");
+      }
+    }
+
+    function trackOpen(id) {
+      docs = docs.map(doc => doc.id === id ? { ...doc, views: (doc.views || 0) + 1, lastOpened: new Date().toISOString() } : doc);
+      saveJSON(DOCS_KEY, docs);
+      render();
+    }
+
+    async function downloadDocument(id) {
+      const doc = docs.find(item => item.id === id);
+      if (!doc) return;
+      try {
+        const file = await getFile(id);
+        if (!file) {
+          showToast("❌ Local file data not found", "error");
+          return;
+        }
+        const url = URL.createObjectURL(file.blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = doc.originalName || doc.name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        showToast("❌ Could not download file", "error");
+      }
+    }
+
+    async function deleteDocument(id) {
+      const doc = docs.find(item => item.id === id);
+      if (!doc) return;
+      if (!confirm(`Delete "${doc.name}"?`)) return;
+      docs = docs.filter(item => item.id !== id);
+      saveJSON(DOCS_KEY, docs);
+      if (doc.source === "local") await deleteFile(id);
+      render();
+      showToast("🗑️ Deleted");
+    }
+
+    function buildSwatches() {
+      els.swatches.innerHTML = subjectColors.map(color => (
+        `<button class="swatch" data-color="${color}" type="button" style="background:${color}" aria-label="Select ${color}"></button>`
+      )).join("");
+      els.swatches.querySelectorAll(".swatch").forEach(button => {
+        button.addEventListener("click", () => {
+          selectedSubjectColor = button.dataset.color;
+          updateSwatches();
+        });
+      });
+      updateSwatches();
+    }
+
+    function updateSwatches() {
+      els.swatches.querySelectorAll(".swatch").forEach(button => {
+        button.classList.toggle("active", button.dataset.color === selectedSubjectColor);
+      });
+    }
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: "id" });
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    async function putFile(id, file) {
+      const db = await openDB();
+      return transact(db, "readwrite", store => store.put({ id, blob: file, name: file.name, type: file.type, size: file.size }));
+    }
+
+    async function getFile(id) {
+      const db = await openDB();
+      return transact(db, "readonly", store => store.get(id));
+    }
+
+    async function deleteFile(id) {
+      const db = await openDB();
+      return transact(db, "readwrite", store => store.delete(id));
+    }
+
+    function transact(db, mode, action) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, mode);
+        const store = tx.objectStore(STORE_NAME);
+        const request = action(store);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+        tx.oncomplete = () => db.close();
+        tx.onerror = () => {
+          db.close();
+          reject(tx.error);
+        };
+      });
+    }
+
+    function countBy(list, mapper) {
+      return list.reduce((acc, item) => {
+        const key = mapper(item);
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+    }
+
+    function normalizeType(type) {
+      return (type || "Other").toUpperCase();
+    }
+
+    function normalizeTypeForForm(type) {
+      const upper = normalizeType(type);
+      if (["PDF", "DOCX", "PPTX", "XLSX", "JPG", "MP4", "ZIP"].includes(upper)) return upper;
+      return "Other";
+    }
+
+    function typeClass(type) {
+      const upper = normalizeType(type);
+      if (["PNG", "JPG", "JPEG", "GIF", "WEBP"].includes(upper)) return "image";
+      if (["MP4", "MOV", "WEBM", "AVI"].includes(upper)) return "video";
+      return upper.toLowerCase();
+    }
+
+    function typeFromFile(name, mime = "") {
+      const ext = (name.split(".").pop() || "").toLowerCase();
+      if (ext === "pdf") return "PDF";
+      if (ext === "doc" || ext === "docx") return "DOCX";
+      if (ext === "ppt" || ext === "pptx") return "PPTX";
+      if (ext === "xls" || ext === "xlsx") return "XLSX";
+      if (ext === "csv") return "CSV";
+      if (ext === "txt") return "TXT";
+      if (ext === "md") return "MD";
+      if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext) || mime.startsWith("image/")) return "JPG";
+      if (["mp4", "mov", "webm", "avi"].includes(ext) || mime.startsWith("video/")) return "MP4";
+      if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) return "ZIP";
+      return "Other";
+    }
+
+    function fileIcon(type) {
+      const upper = normalizeType(type);
+      if (upper === "PDF") return "📕";
+      if (upper === "DOCX") return "📘";
+      if (upper === "PPTX") return "📙";
+      if (upper === "XLSX") return "📗";
+      if (upper === "CSV") return "📊";
+      if (upper === "TXT") return "📄";
+      if (upper === "MD") return "📝";
+      if (["JPG", "PNG", "JPEG", "GIF", "WEBP"].includes(upper)) return "🖼️";
+      if (["MP4", "MOV", "WEBM", "AVI"].includes(upper)) return "🎬";
+      if (["ZIP", "RAR", "7Z", "TAR", "GZ"].includes(upper)) return "🗜️";
+      return "📦";
+    }
+
+    function formatBytes(bytes) {
+      if (!bytes) return "";
+      const units = ["B", "KB", "MB", "GB"];
+      let value = bytes;
+      let index = 0;
+      while (value >= 1024 && index < units.length - 1) {
+        value /= 1024;
+        index += 1;
+      }
+      return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`;
+    }
+
+    function formatDate(value) {
+      if (!value) return "—";
+      return new Date(`${value}T00:00:00`).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function escapeHTML(value = "") {
+      return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function showToast(message) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = message;
+      els.toastStack.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translate(18px, 24px)";
+        setTimeout(() => toast.remove(), 180);
+      }, 2500);
+    }
+
+    async function installPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      els.installBtn.style.display = "none";
+    }
+
+    function registerServiceWorker() {
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      }
+    }
+  </script>
+</body>
+</html>
