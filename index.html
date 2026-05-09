@@ -9,6 +9,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="DocVault">
   <title>DocVault Student Library</title>
+  <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -222,7 +223,7 @@
     }
 
     #installBtn {
-      display: none;
+      display: inline-flex;
     }
 
     .content-grid {
@@ -2298,11 +2299,19 @@
     }
 
     async function installPWA() {
-      if (!deferredPrompt) return;
+      if (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone) {
+        alert("DocVault is already installed on this device.");
+        return;
+      }
+
+      if (!deferredPrompt) {
+        alert("To install DocVault on mobile:\n\nAndroid Chrome: open the browser menu and tap Install app or Add to Home screen.\n\niPhone/iPad Safari: tap Share, then Add to Home Screen.\n\nMobile browsers do not allow a website to download a native .app file directly.");
+        return;
+      }
+
       deferredPrompt.prompt();
       await deferredPrompt.userChoice;
       deferredPrompt = null;
-      els.installBtn.style.display = "none";
     }
 
     function registerServiceWorker() {
