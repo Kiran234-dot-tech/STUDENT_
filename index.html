@@ -105,9 +105,103 @@
     }
 
     .app-shell {
-      display: grid;
+      display: none;
       grid-template-rows: 68px calc(100vh - 68px);
       min-height: 100vh;
+    }
+
+    body.authed .app-shell {
+      display: grid;
+    }
+
+    .auth-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        linear-gradient(135deg, rgba(108, 99, 255, 0.14), transparent 30%),
+        linear-gradient(225deg, rgba(20, 184, 166, 0.1), transparent 32%),
+        linear-gradient(180deg, #10131d, #0b0d13);
+    }
+
+    .auth-screen[hidden] {
+      display: none;
+    }
+
+    .auth-card {
+      width: min(440px, 100%);
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(22, 25, 36, 0.9);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .auth-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .auth-title {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.05;
+    }
+
+    .auth-copy {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin: 20px 0;
+      padding: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(15, 17, 23, 0.5);
+    }
+
+    .auth-tab {
+      min-height: 38px;
+      border-radius: 8px;
+      color: var(--muted);
+      background: transparent;
+      font-weight: 800;
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .auth-tab.active,
+    .auth-tab:hover {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.42), rgba(20, 184, 166, 0.14));
+      transform: translateY(-1px);
+    }
+
+    .auth-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .auth-hint {
+      min-height: 20px;
+      color: #fecaca;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .auth-note {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
     }
 
     .header {
@@ -156,6 +250,28 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .user-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 220px;
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(34, 38, 58, 0.58);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .user-chip span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .clock {
@@ -1052,6 +1168,10 @@
         gap: 8px;
       }
 
+      .user-chip {
+        display: none;
+      }
+
       .btn {
         padding: 0 10px;
       }
@@ -1364,6 +1484,35 @@
   </style>
 </head>
 <body>
+  <section class="auth-screen" id="authScreen">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <span class="brand-mark" aria-hidden="true">📚</span>
+        <div>
+          <h1 class="auth-title"><span class="brand-text">DocVault</span></h1>
+          <p class="auth-copy">Sign in to keep your student library separated on this device.</p>
+        </div>
+      </div>
+      <div class="auth-tabs" role="tablist" aria-label="Account mode">
+        <button class="auth-tab active" id="loginModeBtn" type="button">Sign in</button>
+        <button class="auth-tab" id="signupModeBtn" type="button">Create account</button>
+      </div>
+      <form class="auth-form" id="authForm">
+        <div class="field">
+          <label for="authEmail">Email</label>
+          <input id="authEmail" type="email" autocomplete="email" required placeholder="student@example.com">
+        </div>
+        <div class="field">
+          <label for="authPassword">Password</label>
+          <input id="authPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
+        </div>
+        <div class="auth-hint" id="authHint" aria-live="polite"></div>
+        <button class="btn primary" id="authSubmitBtn" type="submit">Sign in</button>
+      </form>
+      <p class="auth-note">This version stores accounts and library data locally in the browser database. A cloud database can be connected later with Supabase or Firebase credentials.</p>
+    </div>
+  </section>
+
   <div class="app-shell">
     <header class="header">
       <div class="brand" aria-label="DocVault">
@@ -1372,7 +1521,9 @@
       </div>
       <div class="header-actions">
         <div class="clock" id="clock" aria-live="polite">--:--</div>
+        <div class="user-chip" title="Signed in"><span id="currentUserLabel"></span></div>
         <button class="btn ghost" id="installBtn" type="button">Install App</button>
+        <button class="btn ghost" id="logoutBtn" type="button">Sign out</button>
         <button class="btn primary" id="addDocBtn" type="button">＋ Add Document</button>
       </div>
     </header>
@@ -1575,6 +1726,8 @@
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
   <script>
+    const USERS_KEY = "dv_users";
+    const SESSION_KEY = "dv_session";
     const DOCS_KEY = "dv_docs";
     const SUBJECTS_KEY = "dv_subjects";
     const DB_NAME = "DocVaultDB";
@@ -1582,9 +1735,11 @@
     const subjectColors = ["#6c63ff", "#a78bfa", "#22c55e", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"];
     const retiredDefaultSubjectIds = new Set(["sub_physics", "sub_chemistry", "sub_mathematics", "sub_computer_science", "sub_english"]);
 
-    let docs = loadJSON(DOCS_KEY, []);
-    let subjects = loadJSON(SUBJECTS_KEY, []).filter(subject => !retiredDefaultSubjectIds.has(subject.id));
-    docs = docs.map(doc => retiredDefaultSubjectIds.has(doc.subjectId) ? { ...doc, subjectId: "" } : doc);
+    let users = loadJSON(USERS_KEY, []);
+    let currentUser = null;
+    let authMode = "login";
+    let docs = [];
+    let subjects = [];
     let activeView = "all";
     let activeSubjectId = null;
     let editingDocId = null;
@@ -1593,8 +1748,18 @@
     let selectedSubjectColor = subjectColors[0];
 
     const els = {
+      authScreen: document.getElementById("authScreen"),
+      authForm: document.getElementById("authForm"),
+      authEmail: document.getElementById("authEmail"),
+      authPassword: document.getElementById("authPassword"),
+      authHint: document.getElementById("authHint"),
+      authSubmitBtn: document.getElementById("authSubmitBtn"),
+      loginModeBtn: document.getElementById("loginModeBtn"),
+      signupModeBtn: document.getElementById("signupModeBtn"),
       clock: document.getElementById("clock"),
       installBtn: document.getElementById("installBtn"),
+      logoutBtn: document.getElementById("logoutBtn"),
+      currentUserLabel: document.getElementById("currentUserLabel"),
       addDocBtn: document.getElementById("addDocBtn"),
       newSubjectBtn: document.getElementById("newSubjectBtn"),
       viewTitle: document.getElementById("viewTitle"),
@@ -1637,17 +1802,19 @@
     init();
 
     function init() {
-      saveJSON(SUBJECTS_KEY, subjects);
-      saveJSON(DOCS_KEY, docs);
       buildSwatches();
       bindEvents();
       tickClock();
       setInterval(tickClock, 1000);
-      render();
+      restoreSession();
       registerServiceWorker();
     }
 
     function bindEvents() {
+      els.authForm.addEventListener("submit", handleAuth);
+      els.loginModeBtn.addEventListener("click", () => setAuthMode("login"));
+      els.signupModeBtn.addEventListener("click", () => setAuthMode("signup"));
+      els.logoutBtn.addEventListener("click", logout);
       els.addDocBtn.addEventListener("click", () => openDocModal());
       els.newSubjectBtn.addEventListener("click", () => openSubjectModal());
       els.installBtn.addEventListener("click", installPWA);
@@ -1725,6 +1892,122 @@
 
     function saveJSON(key, value) {
       localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function scopedKey(key) {
+      return currentUser ? `${key}_${currentUser.id}` : key;
+    }
+
+    function loadLibraryData() {
+      const hasScopedDocs = localStorage.getItem(scopedKey(DOCS_KEY)) !== null;
+      const hasScopedSubjects = localStorage.getItem(scopedKey(SUBJECTS_KEY)) !== null;
+      docs = loadJSON(scopedKey(DOCS_KEY), hasScopedDocs ? [] : loadJSON(DOCS_KEY, []));
+      subjects = loadJSON(scopedKey(SUBJECTS_KEY), hasScopedSubjects ? [] : loadJSON(SUBJECTS_KEY, []));
+      subjects = subjects.filter(subject => !retiredDefaultSubjectIds.has(subject.id));
+      docs = docs.map(doc => retiredDefaultSubjectIds.has(doc.subjectId) ? { ...doc, subjectId: "" } : doc);
+      saveJSON(scopedKey(SUBJECTS_KEY), subjects);
+      saveJSON(scopedKey(DOCS_KEY), docs);
+    }
+
+    function restoreSession() {
+      const session = loadJSON(SESSION_KEY, null);
+      if (!session) {
+        showAuth();
+        return;
+      }
+      const user = users.find(item => item.id === session.userId);
+      if (!user) {
+        localStorage.removeItem(SESSION_KEY);
+        showAuth();
+        return;
+      }
+      currentUser = { id: user.id, email: user.email };
+      startLibrary();
+    }
+
+    function showAuth() {
+      document.body.classList.remove("authed");
+      els.authScreen.hidden = false;
+      setAuthMode(authMode);
+      setTimeout(() => els.authEmail.focus(), 50);
+    }
+
+    function startLibrary() {
+      loadLibraryData();
+      els.currentUserLabel.textContent = currentUser.email;
+      els.authScreen.hidden = true;
+      document.body.classList.add("authed");
+      render();
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      els.loginModeBtn.classList.toggle("active", mode === "login");
+      els.signupModeBtn.classList.toggle("active", mode === "signup");
+      els.authSubmitBtn.textContent = mode === "login" ? "Sign in" : "Create account";
+      els.authPassword.autocomplete = mode === "login" ? "current-password" : "new-password";
+      els.authHint.textContent = "";
+    }
+
+    async function handleAuth(event) {
+      event.preventDefault();
+      const email = els.authEmail.value.trim().toLowerCase();
+      const password = els.authPassword.value;
+      els.authHint.textContent = "";
+
+      if (password.length < 6) {
+        els.authHint.textContent = "Password must be at least 6 characters.";
+        return;
+      }
+
+      if (authMode === "signup") {
+        if (users.some(user => user.email === email)) {
+          els.authHint.textContent = "An account with this email already exists.";
+          return;
+        }
+        const salt = crypto.randomUUID();
+        const user = {
+          id: crypto.randomUUID(),
+          email,
+          salt,
+          passwordHash: await hashPassword(password, salt),
+          createdAt: new Date().toISOString()
+        };
+        users = [...users, user];
+        saveJSON(USERS_KEY, users);
+        signInUser(user);
+        return;
+      }
+
+      const user = users.find(item => item.email === email);
+      if (!user || user.passwordHash !== await hashPassword(password, user.salt)) {
+        els.authHint.textContent = "Email or password is incorrect.";
+        return;
+      }
+      signInUser(user);
+    }
+
+    function signInUser(user) {
+      currentUser = { id: user.id, email: user.email };
+      saveJSON(SESSION_KEY, { userId: user.id, signedInAt: new Date().toISOString() });
+      els.authForm.reset();
+      startLibrary();
+      showToast("✅ Signed in");
+    }
+
+    function logout() {
+      localStorage.removeItem(SESSION_KEY);
+      currentUser = null;
+      docs = [];
+      subjects = [];
+      closeModals();
+      showAuth();
+    }
+
+    async function hashPassword(password, salt) {
+      const data = new TextEncoder().encode(`${salt}:${password}`);
+      const hash = await crypto.subtle.digest("SHA-256", data);
+      return Array.from(new Uint8Array(hash)).map(byte => byte.toString(16).padStart(2, "0")).join("");
     }
 
     function tickClock() {
@@ -1995,7 +2278,7 @@
       };
 
       docs = existing ? docs.map(item => item.id === id ? doc : item) : [doc, ...docs];
-      saveJSON(DOCS_KEY, docs);
+      saveJSON(scopedKey(DOCS_KEY), docs);
       closeModals();
       render();
       showToast("✅ Saved");
@@ -2009,7 +2292,7 @@
       subjects = [...subjects, subject];
       activeSubjectId = subject.id;
       activeView = "all";
-      saveJSON(SUBJECTS_KEY, subjects);
+      saveJSON(scopedKey(SUBJECTS_KEY), subjects);
       closeModals();
       document.querySelectorAll("[data-view]").forEach(button => {
         button.classList.toggle("active", button.dataset.view === activeView);
@@ -2075,7 +2358,7 @@
 
     function toggleStar(id) {
       docs = docs.map(doc => doc.id === id ? { ...doc, starred: !doc.starred } : doc);
-      saveJSON(DOCS_KEY, docs);
+      saveJSON(scopedKey(DOCS_KEY), docs);
       render();
       showToast("⭐ Starred");
     }
@@ -2104,7 +2387,7 @@
 
     function trackOpen(id) {
       docs = docs.map(doc => doc.id === id ? { ...doc, views: (doc.views || 0) + 1, lastOpened: new Date().toISOString() } : doc);
-      saveJSON(DOCS_KEY, docs);
+      saveJSON(scopedKey(DOCS_KEY), docs);
       render();
     }
 
@@ -2135,7 +2418,7 @@
       if (!doc) return;
       if (!confirm(`Delete "${doc.name}"?`)) return;
       docs = docs.filter(item => item.id !== id);
-      saveJSON(DOCS_KEY, docs);
+      saveJSON(scopedKey(DOCS_KEY), docs);
       if (doc.source === "local") await deleteFile(id);
       render();
       showToast("🗑️ Deleted");
