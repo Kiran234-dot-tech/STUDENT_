@@ -518,6 +518,42 @@
       white-space: nowrap;
     }
 
+    .member-panel {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(17, 20, 31, 0.58);
+    }
+
+    .member-card {
+      min-width: 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(34, 38, 58, 0.58);
+    }
+
+    .member-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .member-value {
+      margin-top: 4px;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 850;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .tabbar {
       display: flex;
       align-items: center;
@@ -1280,6 +1316,10 @@
         padding: 0 9px;
       }
 
+      .member-panel {
+        grid-template-columns: 1fr;
+      }
+
       .tabbar {
         display: none;
       }
@@ -1559,6 +1599,21 @@
           </div>
         </section>
 
+        <section class="member-panel" aria-label="Member status">
+          <div class="member-card">
+            <div class="member-label">Members</div>
+            <div class="member-value" id="memberCount">0</div>
+          </div>
+          <div class="member-card">
+            <div class="member-label">Signed In</div>
+            <div class="member-value" id="signedInStatus">No</div>
+          </div>
+          <div class="member-card">
+            <div class="member-label">Current Account</div>
+            <div class="member-value" id="memberEmail">None</div>
+          </div>
+        </section>
+
         <nav class="tabbar" aria-label="Document views">
           <button class="tab active" data-view="all" type="button">All</button>
           <button class="tab" data-view="starred" type="button">⭐ Starred</button>
@@ -1767,6 +1822,9 @@
       activeSubjectPill: document.getElementById("activeSubjectPill"),
       sourcePill: document.getElementById("sourcePill"),
       viewsPill: document.getElementById("viewsPill"),
+      memberCount: document.getElementById("memberCount"),
+      signedInStatus: document.getElementById("signedInStatus"),
+      memberEmail: document.getElementById("memberEmail"),
       mobileSubjectStrip: document.getElementById("mobileSubjectStrip"),
       subjectNav: document.getElementById("subjectNav"),
       docTable: document.getElementById("docTable"),
@@ -2028,6 +2086,13 @@
       renderSubjectOptions();
       renderDocs();
       renderStats();
+      renderMembers();
+    }
+
+    function renderMembers() {
+      els.memberCount.textContent = users.length;
+      els.signedInStatus.textContent = currentUser ? "Yes" : "No";
+      els.memberEmail.textContent = currentUser ? currentUser.email : "None";
     }
 
     function renderSubjects() {
