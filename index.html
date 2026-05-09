@@ -1399,7 +1399,7 @@
           <div>
             <p class="eyebrow">Student Vault</p>
             <h1 class="workspace-title" id="viewTitle">All Documents</h1>
-            <p class="view-summary" id="viewSummary">0 documents across 5 subjects</p>
+            <p class="view-summary" id="viewSummary">0 documents across 0 subjects</p>
           </div>
           <div class="workspace-pills">
             <span class="status-pill" id="activeSubjectPill"><span class="dot" style="background:#14b8a6"></span>All subjects</span>
@@ -1580,16 +1580,11 @@
     const DB_NAME = "DocVaultDB";
     const STORE_NAME = "files";
     const subjectColors = ["#6c63ff", "#a78bfa", "#22c55e", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"];
-    const defaultSubjects = [
-      { id: "sub_physics", name: "Physics", color: "#6c63ff" },
-      { id: "sub_chemistry", name: "Chemistry", color: "#22c55e" },
-      { id: "sub_mathematics", name: "Mathematics", color: "#f59e0b" },
-      { id: "sub_computer_science", name: "Computer Science", color: "#3b82f6" },
-      { id: "sub_english", name: "English", color: "#ec4899" }
-    ];
+    const retiredDefaultSubjectIds = new Set(["sub_physics", "sub_chemistry", "sub_mathematics", "sub_computer_science", "sub_english"]);
 
     let docs = loadJSON(DOCS_KEY, []);
-    let subjects = loadJSON(SUBJECTS_KEY, defaultSubjects);
+    let subjects = loadJSON(SUBJECTS_KEY, []).filter(subject => !retiredDefaultSubjectIds.has(subject.id));
+    docs = docs.map(doc => retiredDefaultSubjectIds.has(doc.subjectId) ? { ...doc, subjectId: "" } : doc);
     let activeView = "all";
     let activeSubjectId = null;
     let editingDocId = null;
@@ -1643,6 +1638,7 @@
 
     function init() {
       saveJSON(SUBJECTS_KEY, subjects);
+      saveJSON(DOCS_KEY, docs);
       buildSwatches();
       bindEvents();
       tickClock();
@@ -1785,7 +1781,7 @@
     }
 
     function renderSubjectOptions() {
-      els.docSubject.innerHTML = `<option value="">No subject</option>` + subjects.map(subject => (
+      els.docSubject.innerHTML = `<option value="">No subject yet</option>` + subjects.map(subject => (
         `<option value="${subject.id}">${escapeHTML(subject.name)}</option>`
       )).join("");
     }
@@ -1926,6 +1922,8 @@
         els.docTags.value = (doc.tags || []).join(", ");
         els.docNotes.value = doc.notes || "";
         if (doc.source === "local") showExistingFilePreview(doc);
+      } else if (activeSubjectId) {
+        els.docSubject.value = activeSubjectId;
       }
 
       els.docModal.classList.add("open");
@@ -2007,9 +2005,15 @@
       event.preventDefault();
       const name = els.subjectName.value.trim();
       if (!name) return;
-      subjects = [...subjects, { id: crypto.randomUUID(), name, color: selectedSubjectColor }];
+      const subject = { id: crypto.randomUUID(), name, color: selectedSubjectColor };
+      subjects = [...subjects, subject];
+      activeSubjectId = subject.id;
+      activeView = "all";
       saveJSON(SUBJECTS_KEY, subjects);
       closeModals();
+      document.querySelectorAll("[data-view]").forEach(button => {
+        button.classList.toggle("active", button.dataset.view === activeView);
+      });
       render();
       showToast("✅ Saved");
     }
