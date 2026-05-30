@@ -1184,16 +1184,25 @@
       }
 
       .header {
-        height: 64px;
-        padding: 0 12px;
+        height: 62px;
+        padding: 0 10px;
       }
 
       .app-shell {
-        grid-template-rows: 64px calc(100vh - 64px);
+        grid-template-rows: 62px calc(100vh - 62px);
+      }
+
+      .brand {
+        gap: 8px;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
       }
 
       .brand-text {
-        font-size: 19px;
+        font-size: 18px;
       }
 
       .clock {
@@ -1208,8 +1217,31 @@
         display: none;
       }
 
-      .btn {
+      .header-actions .btn {
+        min-height: 38px;
         padding: 0 10px;
+        font-size: 12px;
+      }
+
+      #logoutBtn {
+        display: none;
+      }
+
+      #addDocBtn {
+        width: 40px;
+        padding: 0;
+        font-size: 0;
+      }
+
+      #addDocBtn::before {
+        content: "+";
+        font-size: 25px;
+        line-height: 1;
+        font-weight: 800;
+      }
+
+      #installBtn {
+        max-width: 76px;
       }
 
       .content-grid {
@@ -1219,17 +1251,17 @@
 
       .sidebar {
         position: fixed;
-        left: 10px;
-        right: 10px;
-        bottom: 10px;
+        left: 8px;
+        right: 8px;
+        bottom: calc(8px + env(safe-area-inset-bottom));
         z-index: 35;
-        height: 64px;
+        height: 74px;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 48px;
-        gap: 6px;
-        padding: 6px;
+        grid-template-columns: minmax(0, 1fr) 56px;
+        gap: 7px;
+        padding: 7px;
         border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 8px;
+        border-radius: 16px;
         background: rgba(18, 21, 31, 0.92);
         box-shadow: 0 18px 48px rgba(0, 0, 0, 0.36);
         backdrop-filter: blur(20px) saturate(1.35);
@@ -1248,10 +1280,8 @@
       }
 
       .side-title,
-      .nav-label,
       .subject-name,
-      .badge,
-      .new-subject span {
+      .badge {
         display: none;
       }
 
@@ -1259,42 +1289,105 @@
       .subject-item,
       .new-subject {
         justify-content: center;
-        padding: 0;
+        padding: 4px 2px;
         min-height: 0;
       }
 
       .nav-item,
       .new-subject {
         min-width: 0;
-        height: 52px;
-        border-radius: 8px;
+        height: 60px;
+        border-radius: 12px;
+      }
+
+      .nav-item {
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .nav-label {
+        display: block;
+        width: 100%;
+        color: currentColor;
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1.1;
+        text-align: center;
+      }
+
+      .nav-item[data-view="all"] .nav-label {
+        font-size: 0;
+      }
+
+      .nav-item[data-view="all"] .nav-label::after {
+        content: "All";
+        font-size: 10px;
+      }
+
+      .nav-item[data-view="recent"] .nav-label {
+        font-size: 0;
+      }
+
+      .nav-item[data-view="recent"] .nav-label::after {
+        content: "Recent";
+        font-size: 10px;
+      }
+
+      .nav-item[data-view="local"] .nav-label {
+        font-size: 0;
+      }
+
+      .nav-item[data-view="local"] .nav-label::after {
+        content: "Files";
+        font-size: 10px;
+      }
+
+      .nav-item[data-view="drive"] .nav-label {
+        font-size: 0;
+      }
+
+      .nav-item[data-view="drive"] .nav-label::after {
+        content: "Links";
+        font-size: 10px;
       }
 
       .new-subject {
-        width: 48px;
+        width: 56px;
         margin-top: 0;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 18px;
+      }
+
+      .new-subject span {
+        display: block;
+        font-size: 10px;
+        line-height: 1.1;
+        font-weight: 850;
       }
 
       .nav-icon {
         width: auto;
         flex-basis: auto;
+        font-size: 19px;
       }
 
       .main {
         overflow-y: auto;
         grid-template-rows: auto auto auto minmax(180px, auto) auto;
-        padding: 12px 12px 88px;
-        gap: 10px;
+        padding: 10px 10px calc(96px + env(safe-area-inset-bottom));
+        gap: 9px;
       }
 
       .workspace-panel {
         display: grid;
         min-height: auto;
-        padding: 13px;
+        padding: 14px;
+        border-radius: 12px;
       }
 
       .workspace-title {
-        font-size: 24px;
+        font-size: 23px;
       }
 
       .eyebrow {
@@ -1314,10 +1407,27 @@
       .status-pill {
         min-height: 30px;
         padding: 0 9px;
+        font-size: 11px;
       }
 
       .member-panel {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        padding: 7px;
+        border-radius: 12px;
+      }
+
+      .member-card {
+        padding: 8px;
+        border-radius: 10px;
+      }
+
+      .member-label {
+        font-size: 9px;
+      }
+
+      .member-value {
+        font-size: 13px;
       }
 
       .tabbar {
@@ -1336,8 +1446,8 @@
         align-items: center;
         gap: 7px;
         flex: 0 0 auto;
-        min-height: 34px;
-        padding: 0 12px;
+        min-height: 36px;
+        padding: 0 13px;
         border-radius: 999px;
         color: var(--muted);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1357,14 +1467,27 @@
 
       .toolbar {
         grid-template-columns: 1fr;
-        gap: 8px;
+        gap: 9px;
+      }
+
+      .search-wrap input,
+      select {
+        min-height: 46px;
+        border-radius: 12px;
+      }
+
+      .shortcut {
+        display: none;
       }
 
       .table-wrap {
         overflow-x: hidden;
-        padding: 10px;
+        padding: 0;
         min-height: 170px;
         max-height: none;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
       }
 
       table,
@@ -1390,12 +1513,15 @@
 
       tbody tr {
         display: grid;
-        grid-template-columns: 38px minmax(0, 1fr);
-        gap: 2px 10px;
-        padding: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 8px;
-        background: rgba(26, 29, 39, 0.82);
+        grid-template-columns: 40px minmax(0, 1fr);
+        gap: 3px 10px;
+        padding: 13px;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 14px;
+        background:
+          linear-gradient(180deg, rgba(34, 38, 58, 0.84), rgba(22, 25, 36, 0.9)),
+          rgba(26, 29, 39, 0.82);
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
       }
 
       tbody tr:hover {
@@ -1426,8 +1552,9 @@
         grid-column: 2;
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
-        margin-top: 7px;
+        margin-top: 6px;
       }
 
       tbody td:nth-child(3)::before { content: "Subject"; }
@@ -1457,6 +1584,15 @@
         max-width: 100%;
       }
 
+      .doc-title {
+        font-size: 15px;
+      }
+
+      .doc-meta {
+        white-space: normal;
+        line-height: 1.35;
+      }
+
       .doc-icon {
         width: 36px;
         height: 36px;
@@ -1469,7 +1605,14 @@
       }
 
       .row-actions {
-        margin-top: 4px;
+        width: 100%;
+        margin-top: 7px;
+      }
+
+      .action-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
       }
 
       .statsbar {
@@ -1549,7 +1692,7 @@
         <div class="auth-hint" id="authHint" aria-live="polite"></div>
         <button class="btn primary" id="authSubmitBtn" type="submit">Sign in</button>
       </form>
-      <p class="auth-note">This version stores accounts and library data locally in the browser database. A cloud database can be connected later with Supabase or Firebase credentials.</p>
+      <p class="auth-note" id="authNote">This version stores accounts and library data locally in the browser database. A cloud database can be connected later with Supabase or Firebase credentials.</p>
     </div>
   </section>
 
@@ -1601,8 +1744,8 @@
 
         <section class="member-panel" aria-label="Member status">
           <div class="member-card">
-            <div class="member-label">Members</div>
-            <div class="member-value" id="memberCount">0</div>
+            <div class="member-label">Database</div>
+            <div class="member-value" id="databaseMode">Local</div>
           </div>
           <div class="member-card">
             <div class="member-label">Signed In</div>
@@ -1780,6 +1923,7 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
+  <script src="cloud-config.js"></script>
   <script>
     const USERS_KEY = "dv_users";
     const SESSION_KEY = "dv_session";
@@ -1787,11 +1931,16 @@
     const SUBJECTS_KEY = "dv_subjects";
     const DB_NAME = "DocVaultDB";
     const STORE_NAME = "files";
+    const CLOUD_SESSION_KEY = "dv_supabase_session";
+    const cloudConfig = window.DOCVAULT_SUPABASE || {};
+    const cloudEnabled = !!(cloudConfig.url && cloudConfig.anonKey);
+    const cloudBaseUrl = cloudEnabled ? cloudConfig.url.replace(/\/$/, "") : "";
     const subjectColors = ["#6c63ff", "#a78bfa", "#22c55e", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"];
     const retiredDefaultSubjectIds = new Set(["sub_physics", "sub_chemistry", "sub_mathematics", "sub_computer_science", "sub_english"]);
 
     let users = loadJSON(USERS_KEY, []);
     let currentUser = null;
+    let cloudSession = null;
     let authMode = "login";
     let docs = [];
     let subjects = [];
@@ -1808,6 +1957,7 @@
       authEmail: document.getElementById("authEmail"),
       authPassword: document.getElementById("authPassword"),
       authHint: document.getElementById("authHint"),
+      authNote: document.getElementById("authNote"),
       authSubmitBtn: document.getElementById("authSubmitBtn"),
       loginModeBtn: document.getElementById("loginModeBtn"),
       signupModeBtn: document.getElementById("signupModeBtn"),
@@ -1822,7 +1972,7 @@
       activeSubjectPill: document.getElementById("activeSubjectPill"),
       sourcePill: document.getElementById("sourcePill"),
       viewsPill: document.getElementById("viewsPill"),
-      memberCount: document.getElementById("memberCount"),
+      databaseMode: document.getElementById("databaseMode"),
       signedInStatus: document.getElementById("signedInStatus"),
       memberEmail: document.getElementById("memberEmail"),
       mobileSubjectStrip: document.getElementById("mobileSubjectStrip"),
@@ -1860,6 +2010,9 @@
     init();
 
     function init() {
+      els.authNote.textContent = cloudEnabled
+        ? "Cloud mode is active. Accounts and library metadata sync through Supabase."
+        : "Local mode is active. Add Supabase values in cloud-config.js to sync accounts and library metadata across devices.";
       buildSwatches();
       bindEvents();
       tickClock();
@@ -1956,7 +2109,11 @@
       return currentUser ? `${key}_${currentUser.id}` : key;
     }
 
-    function loadLibraryData() {
+    async function loadLibraryData() {
+      if (cloudEnabled && cloudSession) {
+        await loadCloudLibraryData();
+        return;
+      }
       const hasScopedDocs = localStorage.getItem(scopedKey(DOCS_KEY)) !== null;
       const hasScopedSubjects = localStorage.getItem(scopedKey(SUBJECTS_KEY)) !== null;
       docs = loadJSON(scopedKey(DOCS_KEY), hasScopedDocs ? [] : loadJSON(DOCS_KEY, []));
@@ -1967,7 +2124,11 @@
       saveJSON(scopedKey(DOCS_KEY), docs);
     }
 
-    function restoreSession() {
+    async function restoreSession() {
+      if (cloudEnabled) {
+        await restoreCloudSession();
+        return;
+      }
       const session = loadJSON(SESSION_KEY, null);
       if (!session) {
         showAuth();
@@ -1980,7 +2141,7 @@
         return;
       }
       currentUser = { id: user.id, email: user.email };
-      startLibrary();
+      await startLibrary();
     }
 
     function showAuth() {
@@ -1990,8 +2151,8 @@
       setTimeout(() => els.authEmail.focus(), 50);
     }
 
-    function startLibrary() {
-      loadLibraryData();
+    async function startLibrary() {
+      await loadLibraryData();
       els.currentUserLabel.textContent = currentUser.email;
       els.authScreen.hidden = true;
       document.body.classList.add("authed");
@@ -2018,6 +2179,11 @@
         return;
       }
 
+      if (cloudEnabled) {
+        await handleCloudAuth(email, password);
+        return;
+      }
+
       if (authMode === "signup") {
         if (users.some(user => user.email === email)) {
           els.authHint.textContent = "An account with this email already exists.";
@@ -2033,7 +2199,7 @@
         };
         users = [...users, user];
         saveJSON(USERS_KEY, users);
-        signInUser(user);
+        await signInUser(user);
         return;
       }
 
@@ -2042,19 +2208,26 @@
         els.authHint.textContent = "Email or password is incorrect.";
         return;
       }
-      signInUser(user);
+      await signInUser(user);
     }
 
-    function signInUser(user) {
+    async function signInUser(user) {
       currentUser = { id: user.id, email: user.email };
       saveJSON(SESSION_KEY, { userId: user.id, signedInAt: new Date().toISOString() });
       els.authForm.reset();
-      startLibrary();
+      await startLibrary();
       showToast("✅ Signed in");
     }
 
-    function logout() {
+    async function logout() {
+      if (cloudEnabled && cloudSession) {
+        try {
+          await cloudFetch("/auth/v1/logout", { method: "POST" }, true);
+        } catch (error) {}
+      }
       localStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(CLOUD_SESSION_KEY);
+      cloudSession = null;
       currentUser = null;
       docs = [];
       subjects = [];
@@ -2066,6 +2239,206 @@
       const data = new TextEncoder().encode(`${salt}:${password}`);
       const hash = await crypto.subtle.digest("SHA-256", data);
       return Array.from(new Uint8Array(hash)).map(byte => byte.toString(16).padStart(2, "0")).join("");
+    }
+
+    async function restoreCloudSession() {
+      cloudSession = loadJSON(CLOUD_SESSION_KEY, null);
+      if (!cloudSession) {
+        showAuth();
+        return;
+      }
+
+      if (cloudSession.expires_at && Date.now() > cloudSession.expires_at - 60000) {
+        const refreshed = await refreshCloudSession(cloudSession.refresh_token);
+        if (!refreshed) {
+          showAuth();
+          return;
+        }
+      }
+
+      try {
+        const user = await cloudFetch("/auth/v1/user", { method: "GET" }, true);
+        currentUser = { id: user.id, email: user.email };
+        await ensureCloudProfile(currentUser);
+        await startLibrary();
+      } catch (error) {
+        localStorage.removeItem(CLOUD_SESSION_KEY);
+        showAuth();
+      }
+    }
+
+    async function handleCloudAuth(email, password) {
+      const endpoint = authMode === "signup" ? "/auth/v1/signup" : "/auth/v1/token?grant_type=password";
+      try {
+        const response = await cloudFetch(endpoint, {
+          method: "POST",
+          body: JSON.stringify({ email, password })
+        }, false);
+
+        if (!response.session && authMode === "signup") {
+          els.authHint.textContent = "Account created. Check your email if Supabase asks for confirmation, then sign in.";
+          setAuthMode("login");
+          return;
+        }
+
+        const session = response.session || response;
+        if (!session.access_token || !session.user) {
+          els.authHint.textContent = "Supabase did not return a login session. Check email confirmation settings.";
+          return;
+        }
+
+        setCloudSession(session);
+        currentUser = { id: session.user.id, email: session.user.email };
+        await ensureCloudProfile(currentUser);
+        els.authForm.reset();
+        await startLibrary();
+        showToast("✅ Signed in");
+      } catch (error) {
+        els.authHint.textContent = error.message || "Could not connect to Supabase.";
+      }
+    }
+
+    async function refreshCloudSession(refreshToken) {
+      if (!refreshToken) return false;
+      try {
+        const session = await cloudFetch("/auth/v1/token?grant_type=refresh_token", {
+          method: "POST",
+          body: JSON.stringify({ refresh_token: refreshToken })
+        }, false);
+        if (!session.access_token) return false;
+        setCloudSession(session);
+        return true;
+      } catch (error) {
+        localStorage.removeItem(CLOUD_SESSION_KEY);
+        cloudSession = null;
+        return false;
+      }
+    }
+
+    function setCloudSession(session) {
+      cloudSession = {
+        access_token: session.access_token,
+        refresh_token: session.refresh_token,
+        expires_at: Date.now() + ((session.expires_in || 3600) * 1000),
+        user: session.user
+      };
+      saveJSON(CLOUD_SESSION_KEY, cloudSession);
+    }
+
+    async function cloudFetch(path, options = {}, auth = true) {
+      const headers = {
+        apikey: cloudConfig.anonKey,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      };
+      if (auth && cloudSession?.access_token) {
+        headers.Authorization = `Bearer ${cloudSession.access_token}`;
+      }
+      const response = await fetch(`${cloudBaseUrl}${path}`, { ...options, headers });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
+      if (!response.ok) {
+        throw new Error(data?.msg || data?.message || data?.error_description || "Supabase request failed.");
+      }
+      return data;
+    }
+
+    async function ensureCloudProfile(user) {
+      await cloudFetch("/rest/v1/profiles", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates" },
+        body: JSON.stringify({ id: user.id, email: user.email })
+      }, true);
+    }
+
+    async function loadCloudLibraryData() {
+      const [cloudSubjects, cloudDocs] = await Promise.all([
+        cloudFetch("/rest/v1/subjects?select=*&order=created_at.asc", { method: "GET" }, true),
+        cloudFetch("/rest/v1/documents?select=*&order=created_at.desc", { method: "GET" }, true)
+      ]);
+      subjects = (cloudSubjects || []).map(fromCloudSubject);
+      docs = (cloudDocs || []).map(fromCloudDoc);
+    }
+
+    async function saveCloudSubject(subject) {
+      const rows = await cloudFetch("/rest/v1/subjects?select=*", {
+        method: "POST",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify({
+          id: subject.id,
+          user_id: currentUser.id,
+          name: subject.name,
+          color: subject.color
+        })
+      }, true);
+      return fromCloudSubject(rows[0]);
+    }
+
+    async function saveCloudDocument(doc) {
+      const rows = await cloudFetch("/rest/v1/documents?select=*", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+        body: JSON.stringify(toCloudDoc(doc))
+      }, true);
+      return fromCloudDoc(rows[0]);
+    }
+
+    async function updateCloudDocument(id, updates) {
+      const rows = await cloudFetch(`/rest/v1/documents?id=eq.${encodeURIComponent(id)}&select=*`, {
+        method: "PATCH",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify(updates)
+      }, true);
+      return rows[0] ? fromCloudDoc(rows[0]) : null;
+    }
+
+    async function deleteCloudDocument(id) {
+      await cloudFetch(`/rest/v1/documents?id=eq.${encodeURIComponent(id)}`, { method: "DELETE" }, true);
+    }
+
+    function fromCloudSubject(row) {
+      return { id: row.id, name: row.name, color: row.color };
+    }
+
+    function fromCloudDoc(row) {
+      return {
+        id: row.id,
+        name: row.name,
+        type: row.type,
+        subjectId: row.subject_id || "",
+        source: row.source,
+        link: row.link || "",
+        tags: row.tags || [],
+        notes: row.notes || "",
+        date: row.doc_date || today(),
+        size: row.size || 0,
+        originalName: row.original_name || "",
+        starred: !!row.starred,
+        views: row.views || 0,
+        lastOpened: row.last_opened,
+        createdAt: row.created_at
+      };
+    }
+
+    function toCloudDoc(doc) {
+      return {
+        id: doc.id,
+        user_id: currentUser.id,
+        name: doc.name,
+        type: doc.type,
+        subject_id: doc.subjectId || null,
+        source: doc.source,
+        link: doc.link || null,
+        tags: doc.tags || [],
+        notes: doc.notes || null,
+        doc_date: doc.date || today(),
+        size: doc.size || 0,
+        original_name: doc.originalName || null,
+        starred: !!doc.starred,
+        views: doc.views || 0,
+        last_opened: doc.lastOpened || null,
+        created_at: doc.createdAt || new Date().toISOString()
+      };
     }
 
     function tickClock() {
@@ -2090,7 +2463,7 @@
     }
 
     function renderMembers() {
-      els.memberCount.textContent = users.length;
+      els.databaseMode.textContent = cloudEnabled ? "Supabase" : "Local";
       els.signedInStatus.textContent = currentUser ? "Yes" : "No";
       els.memberEmail.textContent = currentUser ? currentUser.email : "None";
     }
@@ -2342,22 +2715,40 @@
         createdAt: existing ? existing.createdAt || now : now
       };
 
-      docs = existing ? docs.map(item => item.id === id ? doc : item) : [doc, ...docs];
-      saveJSON(scopedKey(DOCS_KEY), docs);
+      let savedDoc = doc;
+      if (cloudEnabled && cloudSession) {
+        try {
+          savedDoc = await saveCloudDocument(doc);
+        } catch (error) {
+          showToast(`❌ ${error.message || "Could not save to Supabase"}`, "error");
+          return;
+        }
+      }
+
+      docs = existing ? docs.map(item => item.id === id ? savedDoc : item) : [savedDoc, ...docs];
+      if (!cloudEnabled) saveJSON(scopedKey(DOCS_KEY), docs);
       closeModals();
       render();
       showToast("✅ Saved");
     }
 
-    function saveSubject(event) {
+    async function saveSubject(event) {
       event.preventDefault();
       const name = els.subjectName.value.trim();
       if (!name) return;
-      const subject = { id: crypto.randomUUID(), name, color: selectedSubjectColor };
+      let subject = { id: crypto.randomUUID(), name, color: selectedSubjectColor };
+      if (cloudEnabled && cloudSession) {
+        try {
+          subject = await saveCloudSubject(subject);
+        } catch (error) {
+          showToast(`❌ ${error.message || "Could not save subject"}`, "error");
+          return;
+        }
+      }
       subjects = [...subjects, subject];
       activeSubjectId = subject.id;
       activeView = "all";
-      saveJSON(scopedKey(SUBJECTS_KEY), subjects);
+      if (!cloudEnabled) saveJSON(scopedKey(SUBJECTS_KEY), subjects);
       closeModals();
       document.querySelectorAll("[data-view]").forEach(button => {
         button.classList.toggle("active", button.dataset.view === activeView);
@@ -2421,9 +2812,20 @@
       if (action === "delete") deleteDocument(id);
     }
 
-    function toggleStar(id) {
-      docs = docs.map(doc => doc.id === id ? { ...doc, starred: !doc.starred } : doc);
-      saveJSON(scopedKey(DOCS_KEY), docs);
+    async function toggleStar(id) {
+      const doc = docs.find(item => item.id === id);
+      if (!doc) return;
+      const updated = { ...doc, starred: !doc.starred };
+      docs = docs.map(item => item.id === id ? updated : item);
+      if (cloudEnabled && cloudSession) {
+        try {
+          await updateCloudDocument(id, { starred: updated.starred });
+        } catch (error) {
+          showToast(`❌ ${error.message || "Could not update star"}`, "error");
+        }
+      } else {
+        saveJSON(scopedKey(DOCS_KEY), docs);
+      }
       render();
       showToast("⭐ Starred");
     }
@@ -2431,7 +2833,7 @@
     async function openDocument(id) {
       const doc = docs.find(item => item.id === id);
       if (!doc) return;
-      trackOpen(id);
+      await trackOpen(id);
       if (doc.source === "drive" && doc.link) {
         window.open(doc.link, "_blank", "noopener");
         return;
@@ -2450,9 +2852,18 @@
       }
     }
 
-    function trackOpen(id) {
-      docs = docs.map(doc => doc.id === id ? { ...doc, views: (doc.views || 0) + 1, lastOpened: new Date().toISOString() } : doc);
-      saveJSON(scopedKey(DOCS_KEY), docs);
+    async function trackOpen(id) {
+      const doc = docs.find(item => item.id === id);
+      if (!doc) return;
+      const updated = { ...doc, views: (doc.views || 0) + 1, lastOpened: new Date().toISOString() };
+      docs = docs.map(item => item.id === id ? updated : item);
+      if (cloudEnabled && cloudSession) {
+        try {
+          await updateCloudDocument(id, { views: updated.views, last_opened: updated.lastOpened });
+        } catch (error) {}
+      } else {
+        saveJSON(scopedKey(DOCS_KEY), docs);
+      }
       render();
     }
 
@@ -2483,7 +2894,16 @@
       if (!doc) return;
       if (!confirm(`Delete "${doc.name}"?`)) return;
       docs = docs.filter(item => item.id !== id);
-      saveJSON(scopedKey(DOCS_KEY), docs);
+      if (cloudEnabled && cloudSession) {
+        try {
+          await deleteCloudDocument(id);
+        } catch (error) {
+          showToast(`❌ ${error.message || "Could not delete document"}`, "error");
+          return;
+        }
+      } else {
+        saveJSON(scopedKey(DOCS_KEY), docs);
+      }
       if (doc.source === "local") await deleteFile(id);
       render();
       showToast("🗑️ Deleted");
