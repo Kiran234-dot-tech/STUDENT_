@@ -2318,6 +2318,7 @@
     let selectedFile = null;
     let deferredPrompt = null;
     let selectedSubjectColor = subjectColors[0];
+    let googleProviderEnabled = null;
 
     const els = {
       authScreen: document.getElementById("authScreen"),
@@ -2383,6 +2384,7 @@
         ? "Cloud mode is active. Accounts and library metadata sync through Supabase."
         : "Local mode is active. Add Supabase values in cloud-config.js to sync accounts and library metadata across devices.";
       els.googleAuthBtn.hidden = !cloudEnabled;
+      checkCloudAuthSettings();
       buildSwatches();
       bindEvents();
       tickClock();
@@ -2612,6 +2614,23 @@
       return Array.from(new Uint8Array(hash)).map(byte => byte.toString(16).padStart(2, "0")).join("");
     }
 
+    async function checkCloudAuthSettings() {
+      if (!cloudEnabled) return;
+      try {
+        const settings = await cloudFetch("/auth/v1/settings", { method: "GET" }, false);
+        googleProviderEnabled = !!settings?.external?.google;
+        els.googleAuthBtn.disabled = !googleProviderEnabled;
+        els.googleAuthBtn.title = googleProviderEnabled
+          ? "Continue with Google"
+          : "Enable Google in Supabase Authentication providers first.";
+        if (!googleProviderEnabled) {
+          els.googleAuthBtn.innerHTML = `<span class="google-mark" aria-hidden="true">G</span>Enable Google in Supabase`;
+        }
+      } catch (error) {
+        googleProviderEnabled = null;
+      }
+    }
+
     function getCloudRedirectSession() {
       const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
       const search = new URLSearchParams(window.location.search);
@@ -2665,6 +2684,10 @@
     function signInWithGoogle() {
       if (!cloudEnabled) {
         els.authHint.textContent = "Google sign-in needs Supabase cloud mode.";
+        return;
+      }
+      if (googleProviderEnabled === false) {
+        els.authHint.textContent = "Google is not enabled yet in Supabase Authentication providers.";
         return;
       }
       const redirectTo = `${window.location.origin}${window.location.pathname}`;
