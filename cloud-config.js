@@ -1,4 +1,4 @@
 window.DOCVAULT_SUPABASE = {
-  url: "",
+  url: "https://aaugvtrsmlxddgbatlem.supabase.co",
   anonKey: ""
 };
