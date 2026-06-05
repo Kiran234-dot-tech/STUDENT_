@@ -129,11 +129,281 @@
       display: none;
     }
 
+    .auth-layout {
+      width: min(980px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .auth-visual {
+      position: relative;
+      min-height: 540px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 28% 18%, rgba(167, 139, 250, 0.22), transparent 34%),
+        linear-gradient(145deg, rgba(34, 38, 58, 0.9), rgba(14, 17, 26, 0.92));
+      box-shadow: var(--shadow);
+      isolation: isolate;
+    }
+
+    .auth-visual::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent);
+      z-index: -1;
+    }
+
+    .login-figure {
+      position: absolute;
+      left: 42px;
+      bottom: 44px;
+      width: 230px;
+      height: 330px;
+      animation: figureFloat 4s ease-in-out infinite;
+    }
+
+    .figure-head {
+      position: absolute;
+      left: 76px;
+      top: 8px;
+      width: 70px;
+      height: 78px;
+      border-radius: 42% 42% 48% 48%;
+      background: #ffb38a;
+      box-shadow: inset -10px -10px rgba(239, 112, 90, 0.18);
+    }
+
+    .figure-hair {
+      position: absolute;
+      left: 58px;
+      top: 2px;
+      width: 84px;
+      height: 52px;
+      border-radius: 48% 52% 20% 42%;
+      background: #111827;
+      transform: rotate(-8deg);
+    }
+
+    .figure-body {
+      position: absolute;
+      left: 52px;
+      top: 84px;
+      width: 110px;
+      height: 142px;
+      border-radius: 28px 28px 12px 12px;
+      background: linear-gradient(180deg, #101827, #111827);
+    }
+
+    .figure-laptop {
+      position: absolute;
+      left: 92px;
+      top: 154px;
+      width: 116px;
+      height: 76px;
+      border-radius: 8px 8px 4px 4px;
+      background: linear-gradient(135deg, #e5e7eb, #b6bfd1);
+      transform: skewX(-8deg);
+      box-shadow: 0 22px 45px rgba(0, 0, 0, 0.25);
+    }
+
+    .figure-leg {
+      position: absolute;
+      left: 62px;
+      top: 218px;
+      width: 132px;
+      height: 84px;
+      border-radius: 999px 40px 52px 999px;
+      background: #536de0;
+    }
+
+    .figure-chair {
+      position: absolute;
+      left: 40px;
+      top: 248px;
+      width: 96px;
+      height: 72px;
+      border-radius: 16px;
+      background: #5b6fe7;
+      box-shadow: 0 34px 0 -28px #d8def0;
+    }
+
+    .security-card,
+    .code-card,
+    .signin-card {
+      position: absolute;
+      border: 1px solid rgba(226, 232, 240, 0.16);
+      border-radius: 14px;
+      background: rgba(248, 250, 252, 0.92);
+      color: #0f172a;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.26);
+      animation: cardFloat 4.8s ease-in-out infinite;
+    }
+
+    .security-card {
+      right: 42px;
+      top: 66px;
+      width: 230px;
+      height: 150px;
+      padding: 18px;
+    }
+
+    .security-dots {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .security-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #0f172a;
+    }
+
+    .lock-orbit {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      margin: 0 auto;
+      border-radius: 50%;
+      background: rgba(108, 99, 255, 0.12);
+      animation: pulseLock 1.9s ease-in-out infinite;
+    }
+
+    .lock {
+      position: relative;
+      width: 34px;
+      height: 28px;
+      border-radius: 7px;
+      background: #5b6fe7;
+    }
+
+    .lock::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: -18px;
+      width: 20px;
+      height: 24px;
+      border: 5px solid #5b6fe7;
+      border-bottom: 0;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .signin-card {
+      right: 70px;
+      top: 238px;
+      width: 250px;
+      padding: 18px;
+      animation-delay: -1.1s;
+    }
+
+    .signin-line,
+    .signin-pass {
+      height: 20px;
+      border-radius: 999px;
+      background: #eef2f7;
+    }
+
+    .signin-line {
+      width: 170px;
+      margin: 0 0 12px auto;
+    }
+
+    .signin-pass {
+      width: 132px;
+      margin-left: auto;
+    }
+
+    .code-card {
+      left: 280px;
+      bottom: 92px;
+      width: 154px;
+      padding: 14px;
+      animation-delay: -2s;
+    }
+
+    .code-title {
+      margin-bottom: 10px;
+      color: #334155;
+      font-size: 10px;
+      font-weight: 900;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .code-boxes {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+    }
+
+    .code-boxes span {
+      height: 30px;
+      border-radius: 7px;
+      background: #e8e5df;
+      animation: codeBlink 1.7s ease-in-out infinite;
+    }
+
+    .code-boxes span:nth-child(2) { animation-delay: 0.12s; }
+    .code-boxes span:nth-child(3) { animation-delay: 0.24s; }
+    .code-boxes span:nth-child(4) { animation-delay: 0.36s; }
+    .code-boxes span:nth-child(5) { animation-delay: 0.48s; }
+
+    .auth-visual-copy {
+      position: absolute;
+      left: 32px;
+      right: 32px;
+      top: 28px;
+    }
+
+    .auth-visual-copy h2 {
+      margin: 0;
+      color: #fff;
+      font-size: 30px;
+      line-height: 1.05;
+    }
+
+    .auth-visual-copy p {
+      max-width: 360px;
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @keyframes figureFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-13px); }
+    }
+
+    @keyframes pulseLock {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(108, 99, 255, 0.28); }
+      50% { box-shadow: 0 0 0 14px rgba(108, 99, 255, 0); }
+    }
+
+    @keyframes codeBlink {
+      0%, 100% { opacity: 0.55; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(-2px); }
+    }
+
     .auth-card {
       width: min(440px, 100%);
       padding: 24px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 8px;
+      border-radius: 18px;
       background: rgba(22, 25, 36, 0.9);
       box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
@@ -188,6 +458,53 @@
     .auth-form {
       display: grid;
       gap: 14px;
+    }
+
+    .google-auth-btn {
+      width: 100%;
+      min-height: 46px;
+      margin-bottom: 14px;
+      border-color: rgba(255, 255, 255, 0.13);
+      background: rgba(248, 250, 252, 0.95);
+      color: #0f172a;
+      font-weight: 850;
+    }
+
+    .google-auth-btn:hover {
+      background: #fff;
+      border-color: rgba(167, 139, 250, 0.5);
+    }
+
+    .google-mark {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .auth-hint {
@@ -1183,6 +1500,24 @@
         overflow: hidden;
       }
 
+      .auth-screen {
+        padding: 14px;
+      }
+
+      .auth-layout {
+        display: block;
+      }
+
+      .auth-visual {
+        display: none;
+      }
+
+      .auth-card {
+        width: 100%;
+        border-radius: 16px;
+        padding: 20px;
+      }
+
       .header {
         height: 62px;
         padding: 0 10px;
@@ -1668,31 +2003,64 @@
 </head>
 <body>
   <section class="auth-screen" id="authScreen">
-    <div class="auth-card">
-      <div class="auth-brand">
-        <span class="brand-mark" aria-hidden="true">📚</span>
-        <div>
-          <h1 class="auth-title"><span class="brand-text">DocVault</span></h1>
-          <p class="auth-copy">Sign in to keep your student library separated on this device.</p>
+    <div class="auth-layout">
+      <aside class="auth-visual" aria-hidden="true">
+        <div class="auth-visual-copy">
+          <h2>Secure study files, synced for every device.</h2>
+          <p>Save class notes, Drive links, and uploads in a private Supabase-powered vault.</p>
         </div>
+        <div class="security-card">
+          <div class="security-dots"><span></span><span></span><span></span></div>
+          <div class="lock-orbit"><div class="lock"></div></div>
+        </div>
+        <div class="signin-card">
+          <div class="signin-line"></div>
+          <div class="signin-pass"></div>
+        </div>
+        <div class="code-card">
+          <div class="code-title">Enter code</div>
+          <div class="code-boxes"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="login-figure">
+          <div class="figure-chair"></div>
+          <div class="figure-leg"></div>
+          <div class="figure-hair"></div>
+          <div class="figure-head"></div>
+          <div class="figure-body"></div>
+          <div class="figure-laptop"></div>
+        </div>
+      </aside>
+      <div class="auth-card">
+        <div class="auth-brand">
+          <span class="brand-mark" aria-hidden="true">📚</span>
+          <div>
+            <h1 class="auth-title"><span class="brand-text">DocVault</span></h1>
+            <p class="auth-copy">Sign in to keep your student library separated on this device.</p>
+          </div>
+        </div>
+        <div class="auth-tabs" role="tablist" aria-label="Account mode">
+          <button class="auth-tab active" id="loginModeBtn" type="button">Sign in</button>
+          <button class="auth-tab" id="signupModeBtn" type="button">Create account</button>
+        </div>
+        <button class="btn google-auth-btn" id="googleAuthBtn" type="button">
+          <span class="google-mark" aria-hidden="true">G</span>
+          Continue with Google
+        </button>
+        <div class="auth-divider">or use email</div>
+        <form class="auth-form" id="authForm">
+          <div class="field">
+            <label for="authEmail">Email</label>
+            <input id="authEmail" type="email" autocomplete="email" required placeholder="student@example.com">
+          </div>
+          <div class="field">
+            <label for="authPassword">Password</label>
+            <input id="authPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
+          </div>
+          <div class="auth-hint" id="authHint" aria-live="polite"></div>
+          <button class="btn primary" id="authSubmitBtn" type="submit">Sign in</button>
+        </form>
+        <p class="auth-note" id="authNote">This version stores accounts and library data locally in the browser database. A cloud database can be connected later with Supabase or Firebase credentials.</p>
       </div>
-      <div class="auth-tabs" role="tablist" aria-label="Account mode">
-        <button class="auth-tab active" id="loginModeBtn" type="button">Sign in</button>
-        <button class="auth-tab" id="signupModeBtn" type="button">Create account</button>
-      </div>
-      <form class="auth-form" id="authForm">
-        <div class="field">
-          <label for="authEmail">Email</label>
-          <input id="authEmail" type="email" autocomplete="email" required placeholder="student@example.com">
-        </div>
-        <div class="field">
-          <label for="authPassword">Password</label>
-          <input id="authPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Minimum 6 characters">
-        </div>
-        <div class="auth-hint" id="authHint" aria-live="polite"></div>
-        <button class="btn primary" id="authSubmitBtn" type="submit">Sign in</button>
-      </form>
-      <p class="auth-note" id="authNote">This version stores accounts and library data locally in the browser database. A cloud database can be connected later with Supabase or Firebase credentials.</p>
     </div>
   </section>
 
@@ -1959,6 +2327,7 @@
       authHint: document.getElementById("authHint"),
       authNote: document.getElementById("authNote"),
       authSubmitBtn: document.getElementById("authSubmitBtn"),
+      googleAuthBtn: document.getElementById("googleAuthBtn"),
       loginModeBtn: document.getElementById("loginModeBtn"),
       signupModeBtn: document.getElementById("signupModeBtn"),
       clock: document.getElementById("clock"),
@@ -2013,6 +2382,7 @@
       els.authNote.textContent = cloudEnabled
         ? "Cloud mode is active. Accounts and library metadata sync through Supabase."
         : "Local mode is active. Add Supabase values in cloud-config.js to sync accounts and library metadata across devices.";
+      els.googleAuthBtn.hidden = !cloudEnabled;
       buildSwatches();
       bindEvents();
       tickClock();
@@ -2023,6 +2393,7 @@
 
     function bindEvents() {
       els.authForm.addEventListener("submit", handleAuth);
+      els.googleAuthBtn.addEventListener("click", signInWithGoogle);
       els.loginModeBtn.addEventListener("click", () => setAuthMode("login"));
       els.signupModeBtn.addEventListener("click", () => setAuthMode("signup"));
       els.logoutBtn.addEventListener("click", logout);
@@ -2241,7 +2612,31 @@
       return Array.from(new Uint8Array(hash)).map(byte => byte.toString(16).padStart(2, "0")).join("");
     }
 
+    function getCloudRedirectSession() {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const search = new URLSearchParams(window.location.search);
+      const error = hash.get("error_description") || search.get("error_description");
+      if (error) {
+        els.authHint.textContent = decodeURIComponent(error.replace(/\+/g, " "));
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return null;
+      }
+      const accessToken = hash.get("access_token");
+      if (!accessToken) return null;
+      return {
+        access_token: accessToken,
+        refresh_token: hash.get("refresh_token") || "",
+        expires_in: Number(hash.get("expires_in") || 3600),
+        user: null
+      };
+    }
+
     async function restoreCloudSession() {
+      const redirectedSession = getCloudRedirectSession();
+      if (redirectedSession) {
+        setCloudSession(redirectedSession);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
       cloudSession = loadJSON(CLOUD_SESSION_KEY, null);
       if (!cloudSession) {
         showAuth();
@@ -2265,6 +2660,19 @@
         localStorage.removeItem(CLOUD_SESSION_KEY);
         showAuth();
       }
+    }
+
+    function signInWithGoogle() {
+      if (!cloudEnabled) {
+        els.authHint.textContent = "Google sign-in needs Supabase cloud mode.";
+        return;
+      }
+      const redirectTo = `${window.location.origin}${window.location.pathname}`;
+      const params = new URLSearchParams({
+        provider: "google",
+        redirect_to: redirectTo
+      });
+      window.location.href = `${cloudBaseUrl}/auth/v1/authorize?${params.toString()}`;
     }
 
     async function handleCloudAuth(email, password) {
