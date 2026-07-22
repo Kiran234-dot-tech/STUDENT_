@@ -2291,6 +2291,7 @@
 
   <div class="toast-stack" id="toastStack" aria-live="polite"></div>
 
+  <script src="firebase-config.js"></script>
   <script src="cloud-config.js"></script>
   <script>
     const USERS_KEY = "dv_users";
@@ -2299,10 +2300,15 @@
     const SUBJECTS_KEY = "dv_subjects";
     const DB_NAME = "DocVaultDB";
     const STORE_NAME = "files";
-    const CLOUD_SESSION_KEY = "dv_supabase_session";
-    const cloudConfig = window.DOCVAULT_SUPABASE || {};
-    const cloudEnabled = !!(cloudConfig.url && cloudConfig.anonKey);
-    const cloudBaseUrl = cloudEnabled ? cloudConfig.url.replace(/\/$/, "") : "";
+    const CLOUD_SESSION_KEY = "dv_cloud_session";
+    const GOOGLE_OAUTH_STATE_KEY = "dv_google_oauth_state";
+    const firebaseConfig = window.DOCVAULT_FIREBASE || {};
+    const firebaseEnabled = !!(firebaseConfig.apiKey && firebaseConfig.projectId);
+    const supabaseConfig = window.DOCVAULT_SUPABASE || {};
+    const supabaseEnabled = !!(supabaseConfig.useSupabaseFallback && supabaseConfig.url && supabaseConfig.anonKey);
+    const cloudProvider = firebaseEnabled ? "firebase" : (supabaseEnabled ? "supabase" : "local");
+    const cloudEnabled = cloudProvider !== "local";
+    const cloudBaseUrl = supabaseEnabled ? supabaseConfig.url.replace(/\/$/, "") : "";
     const subjectColors = ["#6c63ff", "#a78bfa", "#22c55e", "#f59e0b", "#ef4444", "#3b82f6", "#ec4899", "#14b8a6", "#f97316", "#8b5cf6"];
     const retiredDefaultSubjectIds = new Set(["sub_physics", "sub_chemistry", "sub_mathematics", "sub_computer_science", "sub_english"]);
 
@@ -2381,8 +2387,8 @@
 
     function init() {
       els.authNote.textContent = cloudEnabled
-        ? "Cloud mode is active. Accounts and library metadata sync through Supabase."
-        : "Local mode is active. Add Supabase values in cloud-config.js to sync accounts and library metadata across devices.";
+        ? `Cloud mode is active. Accounts and library metadata sync through ${cloudLabel()}.`
+        : "Local mode is active. Add Firebase values in firebase-config.js to sync accounts and library metadata across devices.";
       els.googleAuthBtn.hidden = !cloudEnabled;
       checkCloudAuthSettings();
       buildSwatches();
@@ -2593,7 +2599,7 @@
     }
 
     async function logout() {
-      if (cloudEnabled && cloudSession) {
+      if (cloudProvider === "supabase" && cloudSession) {
         try {
           await cloudFetch("/auth/v1/logout", { method: "POST" }, true);
         } catch (error) {}
@@ -2614,8 +2620,25 @@
       return Array.from(new Uint8Array(hash)).map(byte => byte.toString(16).padStart(2, "0")).join("");
     }
 
+    function cloudLabel() {
+      if (cloudProvider === "firebase") return "Firebase";
+      if (cloudProvider === "supabase") return "Supabase";
+      return "Local";
+    }
+
     async function checkCloudAuthSettings() {
       if (!cloudEnabled) return;
+      if (cloudProvider === "firebase") {
+        googleProviderEnabled = !!firebaseConfig.googleClientId;
+        els.googleAuthBtn.disabled = !googleProviderEnabled;
+        els.googleAuthBtn.title = googleProviderEnabled
+          ? "Continue with Google"
+          : "Add googleClientId in firebase-config.js and enable Google in Firebase Authentication.";
+        if (!googleProviderEnabled) {
+          els.googleAuthBtn.innerHTML = `<span class="google-mark" aria-hidden="true">G</span>Add Google client ID`;
+        }
+        return;
+      }
       try {
         const settings = await cloudFetch("/auth/v1/settings", { method: "GET" }, false);
         googleProviderEnabled = !!settings?.external?.google;
@@ -2650,14 +2673,46 @@
       };
     }
 
+    async function getFirebaseRedirectSession() {
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      const search = new URLSearchParams(window.location.search);
+      const error = hash.get("error_description") || search.get("error_description") || hash.get("error");
+      if (error) {
+        els.authHint.textContent = decodeURIComponent(error.replace(/\+/g, " "));
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return null;
+      }
+      const idToken = hash.get("id_token");
+      if (!idToken) return null;
+      const state = hash.get("state");
+      const saved = loadJSON(GOOGLE_OAUTH_STATE_KEY, null);
+      localStorage.removeItem(GOOGLE_OAUTH_STATE_KEY);
+      if (!saved || saved.state !== state) {
+        els.authHint.textContent = "Google sign-in expired. Please try again.";
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return null;
+      }
+      const response = await firebaseAuthFetch("accounts:signInWithIdp", {
+        postBody: new URLSearchParams({ id_token: idToken, providerId: "google.com" }).toString(),
+        requestUri: saved.redirectTo,
+        returnIdpCredential: true,
+        returnSecureToken: true
+      });
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return response;
+    }
+
     async function restoreCloudSession() {
-      const redirectedSession = getCloudRedirectSession();
+      const redirectedSession = cloudProvider === "firebase"
+        ? await getFirebaseRedirectSession()
+        : getCloudRedirectSession();
       if (redirectedSession) {
         setCloudSession(redirectedSession);
         window.history.replaceState({}, document.title, window.location.pathname);
       }
       cloudSession = loadJSON(CLOUD_SESSION_KEY, null);
-      if (!cloudSession) {
+      if (!cloudSession || cloudSession.provider !== cloudProvider) {
+        localStorage.removeItem(CLOUD_SESSION_KEY);
         showAuth();
         return;
       }
@@ -2671,6 +2726,12 @@
       }
 
       try {
+        if (cloudProvider === "firebase") {
+          currentUser = { id: cloudSession.user.localId, email: cloudSession.user.email };
+          await ensureCloudProfile(currentUser);
+          await startLibrary();
+          return;
+        }
         const user = await cloudFetch("/auth/v1/user", { method: "GET" }, true);
         currentUser = { id: user.id, email: user.email };
         await ensureCloudProfile(currentUser);
@@ -2683,14 +2744,32 @@
 
     function signInWithGoogle() {
       if (!cloudEnabled) {
-        els.authHint.textContent = "Google sign-in needs Supabase cloud mode.";
+        els.authHint.textContent = "Google sign-in needs cloud mode.";
         return;
       }
       if (googleProviderEnabled === false) {
-        els.authHint.textContent = "Google is not enabled yet in Supabase Authentication providers.";
+        els.authHint.textContent = cloudProvider === "firebase"
+          ? "Add googleClientId in firebase-config.js and enable Google in Firebase Authentication."
+          : "Google is not enabled yet in Supabase Authentication providers.";
         return;
       }
       const redirectTo = `${window.location.origin}${window.location.pathname}`;
+      if (cloudProvider === "firebase") {
+        const state = crypto.randomUUID();
+        const nonce = crypto.randomUUID();
+        saveJSON(GOOGLE_OAUTH_STATE_KEY, { state, nonce, redirectTo });
+        const params = new URLSearchParams({
+          client_id: firebaseConfig.googleClientId,
+          redirect_uri: redirectTo,
+          response_type: "id_token",
+          scope: "openid email profile",
+          prompt: "select_account",
+          state,
+          nonce
+        });
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+        return;
+      }
       const params = new URLSearchParams({
         provider: "google",
         redirect_to: redirectTo
@@ -2699,6 +2778,10 @@
     }
 
     async function handleCloudAuth(email, password) {
+      if (cloudProvider === "firebase") {
+        await handleFirebaseAuth(email, password);
+        return;
+      }
       const endpoint = authMode === "signup" ? "/auth/v1/signup" : "/auth/v1/token?grant_type=password";
       try {
         const response = await cloudFetch(endpoint, {
@@ -2729,9 +2812,53 @@
       }
     }
 
+    async function handleFirebaseAuth(email, password) {
+      const endpoint = authMode === "signup" ? "accounts:signUp" : "accounts:signInWithPassword";
+      try {
+        const session = await firebaseAuthFetch(endpoint, {
+          email,
+          password,
+          returnSecureToken: true
+        });
+        if (!session.idToken) {
+          els.authHint.textContent = "Firebase did not return a login session.";
+          return;
+        }
+        setCloudSession(session);
+        currentUser = { id: session.localId, email: session.email };
+        await ensureCloudProfile(currentUser);
+        els.authForm.reset();
+        await startLibrary();
+        showToast("✅ Signed in");
+      } catch (error) {
+        els.authHint.textContent = firebaseErrorMessage(error.message);
+      }
+    }
+
     async function refreshCloudSession(refreshToken) {
       if (!refreshToken) return false;
       try {
+        if (cloudProvider === "firebase") {
+          const params = new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token: refreshToken
+          });
+          const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${encodeURIComponent(firebaseConfig.apiKey)}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString()
+          });
+          const data = await response.json();
+          if (!response.ok) throw new Error(data?.error?.message || "Could not refresh Firebase session.");
+          setCloudSession({
+            idToken: data.id_token,
+            refreshToken: data.refresh_token,
+            expiresIn: data.expires_in,
+            localId: data.user_id,
+            email: cloudSession?.user?.email || ""
+          });
+          return true;
+        }
         const session = await cloudFetch("/auth/v1/token?grant_type=refresh_token", {
           method: "POST",
           body: JSON.stringify({ refresh_token: refreshToken })
@@ -2747,7 +2874,22 @@
     }
 
     function setCloudSession(session) {
+      if (cloudProvider === "firebase" || session.idToken) {
+        cloudSession = {
+          provider: "firebase",
+          access_token: session.idToken || session.access_token,
+          refresh_token: session.refreshToken || session.refresh_token || "",
+          expires_at: Date.now() + (Number(session.expiresIn || session.expires_in || 3600) * 1000),
+          user: {
+            localId: session.localId || session.user?.localId || session.user?.id || session.user_id,
+            email: session.email || session.user?.email || currentUser?.email || ""
+          }
+        };
+        saveJSON(CLOUD_SESSION_KEY, cloudSession);
+        return;
+      }
       cloudSession = {
+        provider: "supabase",
         access_token: session.access_token,
         refresh_token: session.refresh_token,
         expires_at: Date.now() + ((session.expires_in || 3600) * 1000),
@@ -2758,7 +2900,7 @@
 
     async function cloudFetch(path, options = {}, auth = true) {
       const headers = {
-        apikey: cloudConfig.anonKey,
+        apikey: supabaseConfig.anonKey,
         "Content-Type": "application/json",
         ...(options.headers || {})
       };
@@ -2774,7 +2916,48 @@
       return data;
     }
 
+    async function firebaseAuthFetch(endpoint, body) {
+      const response = await fetch(`https://identitytoolkit.googleapis.com/v1/${endpoint}?key=${encodeURIComponent(firebaseConfig.apiKey)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data?.error?.message || "Firebase auth request failed.");
+      }
+      return data;
+    }
+
+    async function firebaseFirestoreFetch(path, options = {}) {
+      const base = `https://firestore.googleapis.com/v1/projects/${encodeURIComponent(firebaseConfig.projectId)}/databases/(default)/documents`;
+      const headers = {
+        Authorization: `Bearer ${cloudSession.access_token}`,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      };
+      const response = await fetch(`${base}${path}`, { ...options, headers });
+      const text = await response.text();
+      const data = text ? JSON.parse(text) : null;
+      if (!response.ok) {
+        throw new Error(data?.error?.message || "Firebase database request failed.");
+      }
+      return data;
+    }
+
     async function ensureCloudProfile(user) {
+      if (cloudProvider === "firebase") {
+        await firebaseFirestoreFetch(`/users/${encodeURIComponent(user.id)}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            fields: {
+              email: fbString(user.email),
+              updatedAt: fbTimestamp(new Date().toISOString())
+            }
+          })
+        });
+        return;
+      }
       await cloudFetch("/rest/v1/profiles", {
         method: "POST",
         headers: { Prefer: "resolution=merge-duplicates" },
@@ -2783,6 +2966,15 @@
     }
 
     async function loadCloudLibraryData() {
+      if (cloudProvider === "firebase") {
+        const [cloudSubjects, cloudDocs] = await Promise.all([
+          firebaseFirestoreFetch(`/users/${encodeURIComponent(currentUser.id)}/subjects`, { method: "GET" }).catch(error => ({ documents: [] })),
+          firebaseFirestoreFetch(`/users/${encodeURIComponent(currentUser.id)}/documents`, { method: "GET" }).catch(error => ({ documents: [] }))
+        ]);
+        subjects = (cloudSubjects.documents || []).map(fromFirebaseSubject).sort((a, b) => (a.createdAt || "").localeCompare(b.createdAt || ""));
+        docs = (cloudDocs.documents || []).map(fromFirebaseDoc).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        return;
+      }
       const [cloudSubjects, cloudDocs] = await Promise.all([
         cloudFetch("/rest/v1/subjects?select=*&order=created_at.asc", { method: "GET" }, true),
         cloudFetch("/rest/v1/documents?select=*&order=created_at.desc", { method: "GET" }, true)
@@ -2792,6 +2984,19 @@
     }
 
     async function saveCloudSubject(subject) {
+      if (cloudProvider === "firebase") {
+        const saved = await firebaseFirestoreFetch(`/users/${encodeURIComponent(currentUser.id)}/subjects/${encodeURIComponent(subject.id)}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            fields: {
+              name: fbString(subject.name),
+              color: fbString(subject.color),
+              createdAt: fbTimestamp(subject.createdAt || new Date().toISOString())
+            }
+          })
+        });
+        return fromFirebaseSubject(saved);
+      }
       const rows = await cloudFetch("/rest/v1/subjects?select=*", {
         method: "POST",
         headers: { Prefer: "return=representation" },
@@ -2806,6 +3011,13 @@
     }
 
     async function saveCloudDocument(doc) {
+      if (cloudProvider === "firebase") {
+        const saved = await firebaseFirestoreFetch(`/users/${encodeURIComponent(currentUser.id)}/documents/${encodeURIComponent(doc.id)}`, {
+          method: "PATCH",
+          body: JSON.stringify({ fields: toFirebaseDocFields(doc) })
+        });
+        return fromFirebaseDoc(saved);
+      }
       const rows = await cloudFetch("/rest/v1/documents?select=*", {
         method: "POST",
         headers: { Prefer: "resolution=merge-duplicates,return=representation" },
@@ -2815,6 +3027,14 @@
     }
 
     async function updateCloudDocument(id, updates) {
+      if (cloudProvider === "firebase") {
+        const existing = docs.find(doc => doc.id === id);
+        const saved = await firebaseFirestoreFetch(`/users/${encodeURIComponent(currentUser.id)}/documents/${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          body: JSON.stringify({ fields: toFirebaseDocFields({ ...existing, ...fromCloudPatch(updates) }) })
+        });
+        return fromFirebaseDoc(saved);
+      }
       const rows = await cloudFetch(`/rest/v1/documents?id=eq.${encodeURIComponent(id)}&select=*`, {
         method: "PATCH",
         headers: { Prefer: "return=representation" },
@@ -2824,7 +3044,120 @@
     }
 
     async function deleteCloudDocument(id) {
+      if (cloudProvider === "firebase") {
+        await firebaseFirestoreFetch(`/users/${encodeURIComponent(currentUser.id)}/documents/${encodeURIComponent(id)}`, { method: "DELETE" });
+        return;
+      }
       await cloudFetch(`/rest/v1/documents?id=eq.${encodeURIComponent(id)}`, { method: "DELETE" }, true);
+    }
+
+    function firebaseId(name) {
+      return (name || "").split("/").pop();
+    }
+
+    function fbString(value) {
+      return { stringValue: value == null ? "" : String(value) };
+    }
+
+    function fbInteger(value) {
+      return { integerValue: String(Number(value || 0)) };
+    }
+
+    function fbBoolean(value) {
+      return { booleanValue: !!value };
+    }
+
+    function fbTimestamp(value) {
+      return { timestampValue: value || new Date().toISOString() };
+    }
+
+    function fbArray(values) {
+      return {
+        arrayValue: {
+          values: (values || []).map(value => fbString(value))
+        }
+      };
+    }
+
+    function fbValue(fields, key, fallback = "") {
+      const field = fields?.[key];
+      if (!field) return fallback;
+      if ("stringValue" in field) return field.stringValue;
+      if ("integerValue" in field) return Number(field.integerValue || 0);
+      if ("booleanValue" in field) return !!field.booleanValue;
+      if ("timestampValue" in field) return field.timestampValue;
+      if ("arrayValue" in field) return (field.arrayValue.values || []).map(item => item.stringValue || "");
+      return fallback;
+    }
+
+    function fromFirebaseSubject(row) {
+      const fields = row.fields || {};
+      return {
+        id: firebaseId(row.name),
+        name: fbValue(fields, "name"),
+        color: fbValue(fields, "color", subjectColors[0]),
+        createdAt: fbValue(fields, "createdAt", "")
+      };
+    }
+
+    function fromFirebaseDoc(row) {
+      const fields = row.fields || {};
+      return {
+        id: firebaseId(row.name),
+        name: fbValue(fields, "name"),
+        type: fbValue(fields, "type", "Other"),
+        subjectId: fbValue(fields, "subjectId", ""),
+        source: fbValue(fields, "source", "drive"),
+        link: fbValue(fields, "link", ""),
+        tags: fbValue(fields, "tags", []),
+        notes: fbValue(fields, "notes", ""),
+        date: fbValue(fields, "date", today()),
+        size: fbValue(fields, "size", 0),
+        originalName: fbValue(fields, "originalName", ""),
+        starred: fbValue(fields, "starred", false),
+        views: fbValue(fields, "views", 0),
+        lastOpened: fbValue(fields, "lastOpened", null),
+        createdAt: fbValue(fields, "createdAt", new Date().toISOString())
+      };
+    }
+
+    function toFirebaseDocFields(doc) {
+      return {
+        name: fbString(doc.name),
+        type: fbString(doc.type),
+        subjectId: fbString(doc.subjectId || ""),
+        source: fbString(doc.source),
+        link: fbString(doc.link || ""),
+        tags: fbArray(doc.tags || []),
+        notes: fbString(doc.notes || ""),
+        date: fbString(doc.date || today()),
+        size: fbInteger(doc.size || 0),
+        originalName: fbString(doc.originalName || ""),
+        starred: fbBoolean(doc.starred),
+        views: fbInteger(doc.views || 0),
+        lastOpened: doc.lastOpened ? fbTimestamp(doc.lastOpened) : fbString(""),
+        createdAt: fbTimestamp(doc.createdAt || new Date().toISOString())
+      };
+    }
+
+    function fromCloudPatch(updates) {
+      const doc = {};
+      if ("starred" in updates) doc.starred = updates.starred;
+      if ("views" in updates) doc.views = updates.views;
+      if ("last_opened" in updates) doc.lastOpened = updates.last_opened;
+      return doc;
+    }
+
+    function firebaseErrorMessage(message) {
+      const readable = {
+        EMAIL_EXISTS: "An account with this email already exists.",
+        EMAIL_NOT_FOUND: "No Firebase account found for this email.",
+        INVALID_PASSWORD: "Email or password is incorrect.",
+        INVALID_LOGIN_CREDENTIALS: "Email or password is incorrect.",
+        OPERATION_NOT_ALLOWED: "Enable Email/Password or Google provider in Firebase Authentication.",
+        TOO_MANY_ATTEMPTS_TRY_LATER: "Too many attempts. Please try again later."
+      };
+      return readable[message] || message || "Could not connect to Firebase.";
     }
 
     function fromCloudSubject(row) {
@@ -2894,7 +3227,7 @@
     }
 
     function renderMembers() {
-      els.databaseMode.textContent = cloudEnabled ? "Supabase" : "Local";
+      els.databaseMode.textContent = cloudEnabled ? cloudLabel() : "Local";
       els.signedInStatus.textContent = currentUser ? "Yes" : "No";
       els.memberEmail.textContent = currentUser ? currentUser.email : "None";
     }
